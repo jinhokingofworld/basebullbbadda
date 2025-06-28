@@ -1,8 +1,8 @@
 from flask import Flask, render_template
 app = Flask(__name__)
 
-## URL 별로 함수명이 같거나,
-## route('/') 등의 주소가 같으면 안 됩니다.
+from views import user
+app.register_blueprint(user.bp)
 
 @app.route('/')
 def home():

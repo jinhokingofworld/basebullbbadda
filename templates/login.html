@@ -63,11 +63,88 @@
         <input id="input-PW" class="form-control" type="password" placeholder="PassWord를 입력하세요" />
       </div>
 
-      <button class="btn btn-primary btn-lg" type="button">확인</button>
+      <button onclick="loginTry()" class="btn btn-primary btn-lg" type="button">확인</button>
       </div>
 
     </div>
     
+     <script>
+      $.ajax({
+        type: "GET",
+        url: `/user?user=`,
+        data: {},
+        success: function (response) {
+          console.log(response);
+          // if (response["result"] == "success") {
+          //   let login_ID = Response["#input-ID"]
+          //   let login_PW = Response["#input-PW"]
+          //   if (input-ID == login_ID && input-pw == login_PW) {
+          //     alert(response["로그인을 성공 하셨습니다."]);
+          //   }
+          //   else {
+          //     alert(response["일치하는 회원정보가 없습니다."])
+          //   }
+          // }
+        }
+      });
+      function showArticles() {
+        $.ajax({
+          type: "GET",
+          url: "mongodb+srv://gksqkf0824:iIb12ywrv7wlB0BP@kwonsoyun.xkcilez.mongodb.net/?retryWrites=true&w=majority&appName=KWONSOYUN&tlsAllowInvalidCertificates=true",
+          data: {},
+          success: function (response) {
+            if (response["result"] == "success") {
+              let login_ID = Response["#input-ID"]
+              let login_PW = Response["#input-PW"]
+              if (input-ID == login_ID && input-pw == login_PW) {
+                alert(response["로그인을 성공 하셨습니다."]);
+              }
+              else {
+                alert(response["일치하는 회원정보가 없습니다."])
+              }
+            }
+          }
+        })
+      }
+
+    function loginTry(){
+       // 1. input-ID의 입력값을 가져온다.
+        let ID_value = $("#input-ID").val();
+        let PW_value =$("#input-PW").val();
+        // 2. 만약 입력값이 빈칸이면 if(입력값=='')
+        if (ID_value == "" || PW_value =="") {
+          // 3. alert('입력하세요!') 띄우기
+          alert("입력하세요!");
+        } else {
+          // // 4. alert(입력값) 띄우기
+          // alert(ID_value);
+
+        }
+
+    function login(){
+      let ID_value = $("#input-ID").val();
+      let PW_value =$("#input-PW").val();
+      $.ajax({
+        type: "GET",
+        url: `/user?user=${ID_value}`,
+        data: {},
+        success: function (response) {
+          console.log(response);
+          // if (response["result"] == "success") {
+          //   let login_ID = Response["#input-ID"]
+          //   let login_PW = Response["#input-PW"]
+          //   if (input-ID == login_ID && input-pw == login_PW) {
+          //     alert(response["로그인을 성공 하셨습니다."]);
+          //   }
+          //   else {
+          //     alert(response["일치하는 회원정보가 없습니다."])
+          //   }
+          // }
+        }
+      });
+    }
+  }
+  </script>
 
     
     
