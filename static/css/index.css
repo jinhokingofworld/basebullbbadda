@@ -1,0 +1,54 @@
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* 페이지 로고 & 프로필 사진 */
+.mainTitle {
+    display: flex;
+    align-items: center;  /* 세로 중앙 정렬 */
+    justify-content: space-between; /* 양쪽 정렬 (필요에 따라 center도 가능) */
+    padding: 20px;
+}
+
+.mainLogo {
+    max-width: 80%;
+}
+.mainLogo img {
+    max-width: 100%;
+    height: auto;
+}
+
+.mainProfile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 20%;
+}
+
+.mainProfile img {
+    border-radius: 50%;  /* 동그란 프로필처럼 표현하고 싶다면 */
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+.mainProfile p {
+    margin-top: 8px;
+    font-weight: bold;
+}
+
+/* 네비게이션 드롭다운 */
+.nav-item.dropdown {
+    position: relative; /* 드롭다운 위치 기준 */
+    width: 100%;
+}
+.nav-item.dropdown .dropdown-menu {
+    width: 100%;
+    left: 0;
+    right: 0;
+}
+.nav-item.dropdown .dropdown-menu .dropdown-item {
+    text-align: center;
+}

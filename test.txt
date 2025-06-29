@@ -1,3 +1,0 @@
-테스트 파일입니다. 
-이게 있으면 main-page branch
-없으면 main branch
