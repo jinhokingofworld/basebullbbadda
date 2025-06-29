@@ -38,9 +38,7 @@ def read_users():
     db.user.insert_one(doc)
 
     # 가입 성공
-    return jsonify({'msg' :'회원가입 성공하셨습니다.', 'nickname' : Nickname })
-
-    
+    return jsonify({'msg' :'회원가입 성공하셨습니다.', 'nickname' : Nickname , 'url' : '/'})
     
 
 # 로그인 페이지 라우팅
