@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
 
 app = Flask(__name__)
 from views import create_app
@@ -67,9 +67,14 @@ def scrapRanking():
    
    return resultList # scrapRanking() 끝
 
+#닉네임 DB api 요청에 응답
+@app.route('/api/getUserData')
+def getNickname():
+   id = session['id']
+   result = db.user.find_one[{'id' : id}]
+   return jsonify(result)
 
-
-#팀 순위 api 요청에 응답하는 주소
+#팀 순위 api 요청에 응답
 @app.route('/api/ranking')
 def getRanking():
    scrapedRanking = scrapRanking()

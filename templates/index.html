@@ -19,12 +19,12 @@
     
         <!-- 로고 이미지와 프로필 사진, 닉네임 -->
         <div class="mainTitle">
-            <div class="mainLogo">
-                <img src="https://placehold.co/400x200">
-            </div>
+            <a href="/"><div class="mainLogo">
+                <!-- <img rel="logoImg" src="#"> -->
+            </div></a>
             <div class="mainProfile">
-                <img src="https://placehold.co/200x200" />
-                <p>닉네임</p>
+                <a href="/user/login"><img id="mainProfileImg" src="https://i.namu.wiki/i/HWL5tg8hqagW8dHBBJMbOoYdEGvyQAkbki_50A0NUXHaluRcIYWcJfnMVWN9xWM3bDb1-8NbirkdubZ3niZcWhOqGFOESg2RClcEeJcvjaB3fSZY324Yi8_9yXYfL1eRZ5xRZP4ucYxLGAxi0DKX_A.webp" /></a>
+                <p id="mainNickname"></p>
             </div>
         </div>
 
@@ -34,32 +34,32 @@
                 <li class="nav-item dropdown border-right border-primary">
                     <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="true">팀</a>
                     <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#">KIA 타이거즈</a>
+                        <a class="dropdown-item" href="/team/Tigers">KIA 타이거즈</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">삼성 라이온즈</a>
+                        <a class="dropdown-item" href="/team/Lions">삼성 라이온즈</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">LG 트윈스</a>
+                        <a class="dropdown-item" href="/team/Twins">LG 트윈스</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">두산 베어스</a>
+                        <a class="dropdown-item" href="/team/Bears">두산 베어스</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">Kt wiz</a>
+                        <a class="dropdown-item" href="/team/Wiz">Kt wiz</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">SSG 랜더스</a>
+                        <a class="dropdown-item" href="/team/Landers">SSG 랜더스</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">롯데 자이언츠</a>
+                        <a class="dropdown-item" href="/team/Giants">롯데 자이언츠</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">한화 이글스</a>
+                        <a class="dropdown-item" href="/team/Eagles">한화 이글스</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">NC 다이노스</a>
+                        <a class="dropdown-item" href="/team/Dinos">NC 다이노스</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#">키움 히어로즈</a>
+                        <a class="dropdown-item" href="/team/Heros">키움 히어로즈</a>
                     </div>
                 </li>
                 <li class="nav-item border-right border-primary">
-                    <a class="nav-link" href="#" >선수</a>
+                    <a class="nav-link" href="/player" >선수</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">로그인</a>
+                    <a id="loginButton" class="nav-link" href="/user/login">로그인</a>
                 </li>
             </ul>
         </div>
@@ -98,6 +98,39 @@
     </div><!-- 컨테이너 끝 -->
 
     <script>
+        $(document).ready(function() {
+            //로그인 확인
+            if (session['id'] == '')
+                return
+
+            //로그인이면 네비게이션 로그인/로그아웃 변경
+            $('#loginButton').attr('href', '/user/logout');
+            $('#loginButton').val('로그아웃');
+
+            //닉네임 DB요청
+            $.ajax({
+                type: "GET",
+                url: "api/getUserData",
+                data: {},
+                success: function(response) {
+                    $('#mainNickname').val(response['nickname']);
+                }
+            });
+        });
+
+        
+
+        //로그아웃 API 요청
+        $.ajax({
+            type: "GET",
+            url: "user/api/logout",
+            data: {},
+            success: function() {
+                console.log('logout success');
+                window.location.href = '/';
+            }
+        });
+
         //팀 순위 정보 API 요청
         $.ajax({
             type: "GET",
