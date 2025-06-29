@@ -1,8 +1,8 @@
 from flask import Blueprint
 
-bp = Blueprint('app', __name__, url_prefix='/team')
+team_page = Blueprint('team', __name__, static_folder="static", template_folder="templates", url_prefix="/team")
 
 
-@bp.route('/')
+@team_page.route('/')
 def hello_pybo():
     return 'Hello, Pybo!'

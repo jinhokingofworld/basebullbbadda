@@ -1,8 +1,11 @@
-import requests 
+import requests
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 from flask import Flask, render_template, request, jsonify
+
 app = Flask(__name__)
+from views import create_app
+create_app(app)
 
 #데이터베이스 연결
 uri = "mongodb+srv://gksqkf0824:iIb12ywrv7wlB0BP@kwonsoyun.xkcilez.mongodb.net/?retryWrites=true&w=majority&appName=KWONSOYUN&tlsAllowInvalidCertificates=true"

@@ -14,19 +14,13 @@
     />
     <!-- 이 부분은 부트스트랩을 불러오는 코드입니다. -->
 
-   <style>
-      .mylogin {
-        width: 300px;
-        height: 200px;
-
-         padding-top: 40px;
-
-        color: black;
-        text-align: center;
-      }
-    </style>
 
 
+    <!-- 이 부분은 index.css를 불러오는 코드입니다.-->
+    <link rel="stylesheet" href="../static/css/index.css">
+    />
+    <!-- 이 부분은 index.css를 불러오는 코드입니다.-->
+     
 </head>
 
 
@@ -45,27 +39,28 @@
     ></script>
     <!-- jQuery와 Bootstrap 번들 코드로 자바스크립트 코드입니다.-->
 
-
     <div class = "wrap">
+      <div class = "container">
 
-      <div class = "mylogin">
-      <h1> 로그인</h1>
-    </div>
-
-    <div class = "form-login">
-      <div class="login-ID">
-        <label for="input-ID">ID</label>
-        <input id="input-ID" class="form-control" type = "text" placeholder="ID를 입력하세요" />
+        <div class = "mylogin">
+        <h1> 로그인</h1>
       </div>
 
-      <div class="login-PW">
-        <label for="input-PW">PassWord</label>
-        <input id="input-PW" class="form-control" type="password" placeholder="PassWord를 입력하세요" />
-      </div>
+      <div class = "form-login">
+        <div class="login-ID">
+          <label for="input-ID">ID</label>
+          <input id="input-ID" class="form-control" type = "text" placeholder="ID를 입력하세요" />
+        </div>
 
-      <button onclick="CheckId()" class="btn btn-primary btn-lg" type="button">확인</button>
-      </div>
+        <div class="login-PW">
+          <label for="input-PW">PassWord</label>
+          <input id="input-PW" class="form-control" type="password" placeholder="PassWord를 입력하세요" />
+        </div>
 
+        <button onclick="CheckId()" class="btn btn-primary btn-lg" type="button">확인</button>
+        </div>
+
+      </div>
     </div>
     
      <script>
@@ -95,7 +90,7 @@
          let dataID= $('#input-ID').val();
          let dataPW= $('#input-PW').val();
 
-         if(dataID== "" && dataPW==""){
+         if(dataID== "" || dataPW==""){
             alert("아이디와 비밀번호를 입력하세요.");
             return 
           }
@@ -109,6 +104,10 @@
         if (response['result'] == 'success') {
           alert(response['msg']);
           }
+        else {
+          alert(response['로그인 실패'])
+        }
+        
         }
       })
       }
