@@ -17,7 +17,7 @@ db = client.Splint2_Database
 
 
 # 회원가입 api 응답하는 부분
-@user_page.route('/api/signin', methods=['POST'])
+@user_page.route('/api/signup', methods=['POST'])
 def read_users():
     # DB에 ID,PW,nickname 데이터 저장
     ID = request.form['id']
@@ -44,10 +44,10 @@ def read_users():
 # 로그인 페이지 라우팅
 @user_page.route('/')
 def routing_users():
-    return render_template('signin.html')
+    return render_template('signup.html')
     
 
-# @user_page.route('/signin', methods=['POST'])
+# @user_page.route('/signup', methods=['POST'])
 # def read_users():
 #     print(" 요청받음")
 #     # user_ID = request.args.get("user")
