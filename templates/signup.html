@@ -99,9 +99,14 @@
         url: `/user/api/signup`,
         data: {id: dataID, pw: dataPW, nickname: dataNickname},
         success: function (response) {
-            alert(response['nickname'] + '님 환영합니다.')
-            // 메인페이지로 리디렉션
-            window.location.href = response['url'];
+            if(response['result'] == 'success') {
+                alert(response['msg'])
+                // 메인페이지로 리디렉션
+                window.location.href = response['url'];
+            }
+            else{
+                alert(response['msg'])
+            }
         }
     });
 
