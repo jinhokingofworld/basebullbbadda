@@ -65,6 +65,12 @@ def bring_users():
     session['id'] = target_user['id']
     return jsonify({'result': 'success', 'msg' : nickname + '님 환영합니다.', 'nickname' : nickname, 'url' : '/'})
 
+#로그아웃 api 응답하는 부분
+@user_page.route('/api/logout', methods=['GET','POST'])
+def out_users():
+    session['id'] = ""
+    
+
 # 로그인 페이지 라우팅
 @user_page.route('/login')
 def routing_login():
