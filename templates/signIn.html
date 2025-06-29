@@ -74,30 +74,32 @@
 <script>
 
     
-
+    // 회원가입 함수
     function CheckId() {
+
+        
             let dataID= $('#id').val();
             let dataPW= $('#pw').val();
+            let dataNickname = $('#nickname').val();
+            let dataPWchk = $('#pwCheck').val();
+
+            if(dataID== "" || dataPW==""){
+                alert("아이디와 비밀번호를 입력하세요.");
+                return 
+            }
             
-            // if(dataID== "" || dataPW==""){
-            //     alert("아이디와 비밀번호를 입력하세요.");
-            //     return 
-            // }
-
-            // let dataPWchk = $('pwCheck').val();
-
-            // if(dataPWchk !=  dataPW ) {
-            //     alert(" 패스워드가 일치하지 않습니다. ");    
-            //     return 
-            // }
-        
+            console.log(dataPW,dataPWchk)
+            if(dataPWchk !=  dataPW ) {
+                alert(" 패스워드가 일치하지 않습니다. ");    
+                return 
+            }
 
         $.ajax({
         type: "POST",
-        url: `/user/signin`,
-        data: {},
+        url: `/user/api/signin`,
+        data: {id: dataID, pw: dataPW, nickname: dataNickname},
         success: function (response) {
-          console.log(response);
+            alert(response['nickname'] + '님 환영합니다.')
         }
     });
 
