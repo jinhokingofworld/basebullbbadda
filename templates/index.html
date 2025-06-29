@@ -100,25 +100,33 @@
     <script>
         $(document).ready(function() {
             //로그인 확인
-            if (session['id'] == '')
-                return
+            $.ajax({
+                type: "GET",
+                url: "/api/session",
+                data: {},
+                success: function(response) {
+                    if(response['logged_in']) {
+                        //로그인이면 네비게이션 로그인/로그아웃 변경
+                        $('#loginButton').attr('href', '/user/logout');
+                        $('#loginButton').text('로그아웃');
+                        $('#mainNickname').text(response['id']);
 
-            //로그인이면 네비게이션 로그인/로그아웃 변경
-            $('#loginButton').attr('href', '/user/logout');
-            $('#loginButton').val('로그아웃');
+                    }
+                }
+            });
+
+            
 
             //닉네임 DB요청
             $.ajax({
                 type: "GET",
-                url: "api/getUserData",
+                url: "api/getUserNickname",
                 data: {},
                 success: function(response) {
-                    $('#mainNickname').val(response['nickname']);
+                    $('#mainNickname').val(response);
                 }
             });
         });
-
-        
 
         //로그아웃 API 요청
         $.ajax({

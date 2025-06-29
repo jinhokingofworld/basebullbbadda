@@ -67,12 +67,25 @@ def scrapRanking():
    
    return resultList # scrapRanking() 끝
 
-#닉네임 DB api 요청에 응답
-@app.route('/api/getUserData')
+#세션 확인하는 API
+@app.route('/api/session')
+def get_session():
+    if 'id' in session: #session은 리스트 형태
+        return jsonify({'logged_in': True, 'id': session['id']})
+    else:
+        return jsonify({'logged_in': False})
+
+@app.route('/api/getUserNickname', methods=['GET'])
 def getNickname():
-   id = session['id']
-   result = db.user.find_one[{'id' : id}]
-   return jsonify(result)
+    id = session.get('id')
+    if not id:
+        return jsonify({'error': 'Not logged in'}), 401
+
+    result = db.user.find_one({'id': id}, {'_id': 0})
+    if not result:
+        return jsonify({'error': 'User not found'}), 404
+
+    return result['nickname']
 
 #팀 순위 api 요청에 응답
 @app.route('/api/ranking')
