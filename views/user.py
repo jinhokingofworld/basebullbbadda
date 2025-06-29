@@ -11,8 +11,8 @@ db = client.user
 
  # MongoDB에 insert 하기
     
-#     # 'users'라는 collection에 {'ID':'myungwan31','PW':jungleFighting}를 넣습니다.
-# db.users.insert_one({'ID':'myungwan31','PW':'jungleFighting'})
+# 'users'라는 collection에 {'ID':'myungwan31','PW':jungleFighting}를 넣습니다.
+db.users.insert_one({'ID':'myungwan31','PW':'jungleFighting'})
 
 
 
@@ -40,11 +40,17 @@ def login_users():
     # print(user_ID)
 
     data = request.get_json()
-    print("받은 데이터:", data)
-
     user_id = data.get('id')
     user_pw = data.get('pw')
-    print("ID: {user_id}, PW: {user_pw}")
+    print("받은 ID: {user_id}, PW: {user_pw}")
 
+    user = db.users.find_one({"ID": user_id})  # ID로 사용자 찾기
 
-    return jsonify({'result': 'success', 'msg': 'POST 연결되었습니다!'})
+    if user:
+        if user["PW"] == user_pw:
+            return jsonify({'result': 'success', 'msg': '로그인 성공'})
+        else:
+            return jsonify({'result': 'fail', 'msg': '로그인 실패'})
+
+    else:
+        return jsonify({'result': 'success', 'msg': 'POST 연결되었습니다!'})

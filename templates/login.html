@@ -92,8 +92,8 @@
 
 
       function CheckId() {
-         let dataID= $('#input-ID').val()
-         let dataPW= $('#input-PW').val()
+         let dataID= $('#input-ID').val();
+         let dataPW= $('#input-PW').val();
 
          if(dataID== "" && dataPW==""){
             alert("아이디와 비밀번호를 입력하세요.");
@@ -106,7 +106,7 @@
         data:{id: dataID, pw: dataPW},
         success: function(response) {
           // 성공하면
-        if (response['result'] === 'success') {
+        if (response['result'] == 'success') {
           alert(response['msg']);
           }
         }
@@ -136,20 +136,6 @@
       //   })
       // }
 
-    function loginTry(){
-       // 1. input-ID의 입력값을 가져온다.
-        let ID_value = $("#input-ID").val();
-        let PW_value =$("#input-PW").val();
-        // 2. 만약 입력값이 빈칸이면 if(입력값=='')
-        if (ID_value == "" || PW_value =="") {
-          // 3. alert('입력하세요!') 띄우기
-          alert("입력하세요!");
-        } else {
-          // // 4. alert(입력값) 띄우기
-          // alert(ID_value);
-
-        }
-
     function login(){
       let ID_value = $("#input-ID").val();
       let PW_value =$("#input-PW").val();
@@ -172,7 +158,7 @@
         }
       });
     }
-  }
+
   </script>
 
     
