@@ -1,0 +1,101 @@
+<!-- 로고 이미지와 프로필 사진, 닉네임 -->
+<div class="mainTitle">
+    <a href="/"><div class="mainLogo">
+        <!-- <img rel="logoImg" src="#"> -->
+    </div></a>
+    <div class="mainProfile">
+        <a id="mainMyPage" href="/user/login"><img id="mainProfileImg" src="https://i.namu.wiki/i/HWL5tg8hqagW8dHBBJMbOoYdEGvyQAkbki_50A0NUXHaluRcIYWcJfnMVWN9xWM3bDb1-8NbirkdubZ3niZcWhOqGFOESg2RClcEeJcvjaB3fSZY324Yi8_9yXYfL1eRZ5xRZP4ucYxLGAxi0DKX_A.webp" /></a>
+        <p id="mainNickname"></p>
+    </div>
+</div>
+
+<!-- 네비게이션 -->
+<div class="border border-primary rounded">
+    <ul class="nav nav-pills nav-justified">
+        <li class="nav-item dropdown border-right border-primary">
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="true">팀</a>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="/team/Tigers">KIA 타이거즈</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/team/Lions">삼성 라이온즈</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/team/Twins">LG 트윈스</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/team/Bears">두산 베어스</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/team/Wiz">Kt wiz</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/team/Landers">SSG 랜더스</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/team/Giants">롯데 자이언츠</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/team/Eagles">한화 이글스</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/team/Dinos">NC 다이노스</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/team/Heros">키움 히어로즈</a>
+            </div>
+        </li>
+        <li class="nav-item border-right border-primary">
+            <a class="nav-link" href="/player" >선수</a>
+        </li>
+        <li class="nav-item">
+            <a id="loginButton" class="nav-link" href="/user/login">로그인</a>
+        </li>
+    </ul>
+</div>
+
+<script>
+    // 페이지 로딩 전 실행
+    $(document).ready(function() {
+        //로그인 확인
+        $.ajax({
+            type: "GET",
+            url: "/api/session",
+            data: {},
+            success: function(response) {
+                //로그인 상태면 True
+                if(response['logged_in']) {
+                    //네비게이션 로그인/로그아웃 변경
+                    $('#loginButton').text('로그아웃');
+
+                    //로그아웃 api 요청
+                    $('#loginButton').on('click', function(e) {
+                        e.preventDefault(); // 새로고침 방지
+                        //로그아웃 API 요청
+                        $.ajax({
+                            type: "GET",
+                            url: "user/api/logout",
+                            data: {},
+                            success: function(response) {
+                                alert(response['msg']);
+                                window.location.href = '/';
+                            }
+                        });
+                    });
+                    
+                    //닉네임 표시
+                    $('#mainNickname').text(response['nickname']);
+                    
+                    //동적 생성되는 마이페이지로 가는 링크 
+                    //주소는 /user/<id>
+                    $('#mainMyPage').attr('href', '/user/' + response['id'])
+
+                    //프로필 이미지 DB요청
+                    $.ajax({
+                        type: "GET",
+                        url: "/api/getUserImg",
+                        data: {},
+                        success: function(response) {
+                            if (response['msg'] == success)
+                                $('#mainProfileImg').attr("src", response['img']);
+                        }
+                    });
+
+                }
+            }
+        });
+
+        
+    });
+</script>
