@@ -87,7 +87,7 @@ def getUserImg():
     #세션 아이디 확인
     element = get_session()
     #로그인 상태가 아니면 종료
-    if not element['logged_in']:
+    if not element['id']:
       return jsonify({'msg': '로그인 상태가 아닙니다.'})
     # 세션과 아이디가 같은 회원의 idol을 반환 //좋아하는 선수 이미지 저장
     target = db.user.find_one({'id': element['id']}, {'_id': 0})
