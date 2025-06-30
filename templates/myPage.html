@@ -105,7 +105,6 @@
     </div>
 
     <script>
-        //pickTeam changeNick delUser
         
         $(document).ready(function() {
             //페이지 로딩 중 로그인 확인
@@ -127,34 +126,32 @@
 
         //좋아하는 팀 등록
         function pickMyTeam() {
+            let input = $('#pickTeam').val();
             $.ajax({
-                type: "GET",
-                url: "/api/session",
-                data: {},
+                type: "POST",
+                url: "/user/api/idol",
+                data: {'idol' : input},
                 success: function(response){
-                    //로그인이 아니면 alert후 메인페이지로 이동
-                    if (!response['logged_in']){
-                        alert('잘못된 접근입니다.');
-                        window.location.href = '/'
-                    };
+                    alert(response['msg'])
+                },
+                error: function() {
+                    alert('에러가 발생했습니다.');
                 }
             });
         }
 
         //닉네임 변경
         function updateNick() {
-            input = $('changeNick').val();
-
+            let input = $('changeNick').val();
             $.ajax({
                 type: "POST",
-                url: "user/api/updateNick",
+                url: "/user/api/updateNick",
                 data: { 'new_nick' : input },
                 success: function(response){
-                    //로그인이 아니면 alert후 메인페이지로 이동
-                    if (!response['logged_in']){
-                        alert('잘못된 접근입니다.');
-                        window.location.href = '/'
-                    };
+                        alert('닉네임이 ' + response['nickname'] +'으로 변경되었습니다.');
+                },
+                error: function(){
+                    alert('오류가 발생했습니다.');
                 }
             });
         }
@@ -163,29 +160,34 @@
         function deleteUser() {
             let input = $('#delUser').val();
 
-            if (input != session.get('id')) {
-                alert('잘못된 아이디를 입력하셨습니다.');
-                return;
-            }
-
-            //DB에 계정 삭제요청
+            //세션 정보 요청
             $.ajax({
-                type: "POST",
-                url: "user/api/delete",
-                data: {'id' : input},
+                type: "GET",
+                url: "/api/session",
+                data: {},
                 success: function(response){
-                    //아이디 삭제 완료
-                    if (response['msg'] == 'success'){
-                        alert('계정이 정상적으로 삭제되었습니다.');
-                        window.location.href = '/';
+                    //입력한 값이 맞으면
+                    if ( input == response['id']){
+                        //DB에 계정 삭제요청
+                        $.ajax({
+                            type: "POST",
+                            url: "/user/api/delete",
+                            data: {'id' : input},
+                            success: function(response){
+                                //아이디 삭제 완료
+                                alert(response['msg']);
+                                window.location.href = '/';
+                            },
+                            error: function(XHR) {
+                                alert('오류가 발생했습니다.');
+                                window.location.href = '/';
+                            }
+                        });       
                     }
                 },
-                error: function(XHR) {
-                    alert('오류가 발생했습니다.');
-                    window.location.href = '/';
-                }
             });
         }
+            
     </script>
 </body>
 </html>

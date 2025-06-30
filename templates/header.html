@@ -87,8 +87,7 @@
                         url: "/api/getUserImg",
                         data: {},
                         success: function(response) {
-                            if (response['msg'] == success)
-                                $('#mainProfileImg').attr("src", response['img']);
+                            $('#mainProfileImg').attr("src", response['img']);
                         }
                     });
 

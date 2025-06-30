@@ -30,9 +30,10 @@
 
 .mainProfile img {
     border-radius: 50%;  /* 동그란 프로필처럼 표현하고 싶다면 */
-    width: 100px;
-    height: 100px;
+    width: 110px;
+    height: 110px;
     object-fit: cover;
+    object-position: center;
 }
 
 .mainProfile p {
