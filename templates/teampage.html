@@ -112,12 +112,12 @@
          // 댓글 작성 api 요청하는 부분
         $.ajax({
         type: "POST",
-        url: `/user/api/teampage/commment`,
-        data: {id: dataID, pw: dataPW, nickname: dataNickname},
+        url: `/team/api/comment`,
+        data: {comment: dataComment},
         success: function (response) {
             if(response['result'] == 'success') {
                 alert(response['msg'])
-                // 팀페이지로 리디렉션 (제자리)
+                // 팀페이지로 리디렉션 (제자리 리디렉션)
                 window.location.href = response['url'];
             }
             else{
