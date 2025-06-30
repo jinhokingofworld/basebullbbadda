@@ -20,8 +20,8 @@
         crossorigin="anonymous"></script>
 
     <div class="container">
-        {%include'./header.html'%}
-
+        {%include'header.html'%}
+    
     <!--팀세부페이지 들어갈 곳-->
     <div class="card mb-3" style="max-width: 1080px;">
         <div class="row no-gutters">
@@ -35,8 +35,7 @@
                         연고지: {{ team['team_location'] }}<br>
                         감독: {{ team['team_manage'] }}<br>
                         우승 횟수: {{ team['team_win'] }}<br>
-                        팀컬러:<span
-                            style="background-color: {{ team['team_color'] }}; padding: 5px; border-radius: 10px; color: white;">
+                        팀컬러:<span style="background-color: {{ team['team_color'] }}; padding: 5px; border-radius: 10px; color: white;">
                             {{ team['team_color'] }}
                         </span>
 
@@ -78,7 +77,7 @@
 
 
     <!--경기일정 들어갈 곳 -->
-    <div class="container">
+    <div>
         <div class="col">col</div>
         <div class="col">col</div>
         <div class="col">col</div>

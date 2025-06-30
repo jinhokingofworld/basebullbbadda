@@ -72,7 +72,8 @@ def out_users():
 # 마이 페이지 동적 라우팅
 @user_page.route('/<id>')
 def routing_myPage(id):
-    return '<h1>' + id +'의 myPage입니다</h1>'
+    my_data=db.user.find_one({'id' : id})
+    return render_template('myPage.html', MyData = my_data)
 
 # 로그인 페이지 라우팅
 @user_page.route('/login')
