@@ -64,8 +64,8 @@
                         e.preventDefault(); // 새로고침 방지
                         //로그아웃 API 요청
                         $.ajax({
-                            type: "GET",
-                            url: "user/api/logout",
+                            type: "POST",
+                            url: "/user/api/logout",
                             data: {},
                             success: function(response) {
                                 alert(response['msg']);
