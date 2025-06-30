@@ -1,5 +1,5 @@
 from .user import user_page
-from .team import team_page
+from .teampage import team_page
 from .player import player_page
 import secrets
 

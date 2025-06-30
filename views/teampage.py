@@ -4,9 +4,9 @@ from pymongo import MongoClient
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import time
-from flask import Flask, render_template
+from flask import Flask, render_template, Blueprint
 
-app=Flask(__name__)
+team_page = Blueprint('team', __name__, static_folder="static", template_folder="templates", url_prefix="/team")
 
 uri="mongodb+srv://gksqkf0824:iIb12ywrv7wlB0BP@kwonsoyun.xkcilez.mongodb.net/?retryWrites=true&w=majority&appName=KWONSOYUN&tlsAllowInvalidCertificates=true"
 client=MongoClient("mongodb+srv://gksqkf0824:iIb12ywrv7wlB0BP@kwonsoyun.xkcilez.mongodb.net/?retryWrites=true&w=majority&appName=KWONSOYUN&tlsAllowInvalidCertificates=true")
@@ -175,25 +175,8 @@ for team_name in team_homepage.keys():
 
 
 #정보 연결 
-@app.route('/team/<team_id>')
-def team_detail(team_id):
-    team_name_map={
-        "Tigers": "KIA 타이거즈",
-        "Giants": "롯데 자이언츠",
-        "Twins": "LG 트윈스",
-        "Bears": "두산 베어스",
-        "Lions": "삼성 라이온즈",
-        "Wiz": "KT 위즈",
-        "Eagles": "한화 이글스",
-        "Heros": "키움 히어로즈",
-        "Dinos": "NC 다이노스",
-        "Landers": "SSG 랜더스"
-    }
-
-    team_name=team_name_map.get(team_id)
-    team_data=teams_col.find_one({"team_name":team_name})
-
-    return render_template("teampage.html",team=team_data)
-
-if __name__=='__main__':
-    app.run(debug=True)
+@team_page.route('/<teamName>')
+def team_detail(teamName):
+    #팀 정보 객체 찾아서 리디렉션과 동시에 던져줌
+    team_data=teams_col.find_one({'team_name' : teamName})
+    return render_template("teampage.html",team = team_data)
