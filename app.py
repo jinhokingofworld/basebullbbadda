@@ -68,12 +68,12 @@ def scrapRanking():
    return resultList # scrapRanking() 끝
 
 #세션 확인하는 API
-@app.route('/api/session')
+@app.route('/api/session', methods = ['GET'])
 def get_session():
     if 'id' in session: #session은 리스트 형태
         return jsonify({'logged_in': True, 'id': session['id'], 'nickname': session['nickname']})
     else:
-        return jsonify({'logged_in': False})
+        return jsonify({'logged_in': False, 'msg' : '로그인상태가 아닙니다.', 'url': '/user/login'})
 
 #팀 순위 api 요청에 응답
 @app.route('/api/ranking')
@@ -124,4 +124,4 @@ def team_detail(team_id):
 
 # 서버 실행
 if __name__ == '__main__':
-   app.run('0.0.0.0', port=5000, debug=True)
+   app.run('0.0.0.0', port=5000)

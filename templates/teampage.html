@@ -60,7 +60,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
         crossorigin="anonymous"></script>
-
+</head>
+<body>
     <div class="container">
         {%include'./header.html'%}
 
@@ -125,40 +126,64 @@
             <!-- <img src = "프로필사진">댓글 프로필이 들어갈 부분></img>
              <p class="아이디"> 댓글아이디가 들어갈 부분 </p> -->
             <p><span class = "date" > 날짜가 들어갈 부분</span></p>
-            <p><textarea class = "comment-box" id ="comment_content"></textarea></p>
-            <button onclick =postComment() class=" btn btn-primary btnComment" id="comment_button" type="button">등록</button>
+            <p><textarea class = "comment-box" id ="comment_content" placeholder="댓글을 입력하세요."></textarea></p>
+            <button onclick ="postComment()" class=" btn btn-primary btnComment" id="comment_button" data-team_id="{{team_id}}" type="button">등록</button>
         </div>
+        <!-- <hr>
+        <p class = "comment_commentText" id="commentText"></p> -->
 
     </div>
 
     <script>
     function postComment() {
-         let dataComment = $('#comment_content').val();
 
-            if(dataComment== ""){
-                alert("내용을 입력하세요.");
-                return 
-            }
+        let dataComment = $('#comment_content').val().trim();
+        // console.log(dataComment);
+        // let temp_html = `<textarea> ${dataComment}</textarea>`;
+                
+        if(dataComment == "") {
+            alert("내용이 없습니다.");
+            return;
+        }
 
-         // 댓글 작성 api 요청하는 부분
+                //로그인 세션 api 요청하는 부분
         $.ajax({
-        type: "POST",
-        url: `/team/api/comment`,
-        data: {comment: dataComment},
-        success: function (response) {
-            if(response['result'] == 'success') {
-                alert(response['msg'])
-                // 팀페이지로 리디렉션 (제자리 리디렉션)
-                window.location.href = response['url'];
+        type :'GET',
+        url: `/api/session`,
+        data: {},
+        success: function(response) {
+            if(response['logged_in'] == true) {
+                
+                    let team_id = $('#comment_button').data('team_id');
+                 // 댓글 작성 api 요청하는 부분
+                    $.ajax({
+                    type :'POST',
+                    url: `/${team_id}/comment`,
+                    data: { comment: dataComment},
+                    success: function(response) {
+                        if(response['result'] == 'success') {
+                            alert(response['msg'])
+                            // 팀페이지로 리디렉션 (제자리 리디렉션)
+                            window.location.href = response['url'];
+                        }
+                        else{
+                            alert(response['msg'])
+                        }
+                    }
+                    });
+
             }
+            
             else{
                 alert(response['msg'])
+                window.location.href = response['url'];  // 로그인 페이지로 리디렉션
+                }
             }
-        }
-    });
-
-    }
-    </script>
+        });
+}
+                
+               
+</script>
 
 
 </body>
