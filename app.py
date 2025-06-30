@@ -99,6 +99,29 @@ def getUserImg():
 def home():
    return render_template('index.html')
 
+teams_col = db.teams  # 이거 꼭 있어야 함
+
+@app.route('/team/<team_id>')
+def team_detail(team_id):
+    team_name_map = {
+        "Tigers": "KIA 타이거즈",
+        "Giants": "롯데 자이언츠",
+        "Twins": "LG 트윈스",
+        "Bears": "두산 베어스",
+        "Lions": "삼성 라이온즈",
+        "Wiz": "KT 위즈",
+        "Eagles": "한화 이글스",
+        "Heros": "키움 히어로즈",
+        "Dinos": "NC 다이노스",
+        "Landers": "SSG 랜더스"
+    }
+
+    team_name = team_name_map.get(team_id)
+    team_data = teams_col.find_one({"team_name": team_name})
+
+    return render_template("teampage.html", team=team_data)
+
+
 # 서버 실행
 if __name__ == '__main__':
    app.run('0.0.0.0', port=5000, debug=True)
