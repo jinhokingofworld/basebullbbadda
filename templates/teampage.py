@@ -1,11 +1,21 @@
 import requests
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+import time
 
 uri="mongodb+srv://gksqkf0824:iIb12ywrv7wlB0BP@kwonsoyun.xkcilez.mongodb.net/?retryWrites=true&w=majority&appName=KWONSOYUN&tlsAllowInvalidCertificates=true"
 client=MongoClient("mongodb+srv://gksqkf0824:iIb12ywrv7wlB0BP@kwonsoyun.xkcilez.mongodb.net/?retryWrites=true&w=majority&appName=KWONSOYUN&tlsAllowInvalidCertificates=true")
 db=client.Splint2_Database
 teams_col=db.teams
+
+options=Options()
+options.add_argument('--headless')
+options.add_argument('--no-sandbox')
+options.add_argument('--disable-dev-shu-usage')
+
+driver=webdriver.Chrome(options=options)
 
 #팀 홈페이지 정보
 team_homepage={
@@ -35,60 +45,6 @@ team_location={
     "SSG 랜더스": "인천광역시"
 }
 
-#동적 반복
-for team_name in team_homepage.keys():
-   
-    query=f"{team_name}"
-    uri=f"https://search.naver.com/search.naver?query={query}"
-    headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
-    res=requests.get(uri,headers=headers)
-    soup=BeautifulSoup(res.text,'html.parser')
-
-    doc={
-        "team_name":team_name,
-        "homepage":team_homepage[team_name],
-        "region":team_location[team_name]
-    }
-
-#팀 이미지 가져오기
-    team_image=soup.select_one('.api_cs_wrap .thmb img')
-    if team_image and team_image.has_attr('src'):
-        doc["image"]=team_image['src']
-    else:
-        doc["image"]=""
-
-#팀당 감독 들고오기
-    team_manage=soup.select_one('.detail .class_etcinfo_sportsgame_managerTitle + dd a')
-    if team_manage:
-        doc["manager"]=team_manage.get_text(strip=True)
-    else:
-        doc["manager"]=""
-  
-# #팀 경기일정 
-#     team_code=team_name.split()[0]
-#     schedule_url=f"https://www.koreabaseball.com/Schedule/Schedule.aspx"
-#     res_schedule=requests.get(schedule_url, headers=headers)
-#     soup_schedule=BeautifulSoup(res_schedule.text,'html.parser')
-#     schedule_rows=soup_schedule.select('.tbl tbody tr')
-#     schedule_list=[]
-
-#     for row in schedule_rows:
-#         cols=row.select('td')
-#         if len(cols)>=3:
-#             date=cols[0].text.strip()
-#             time_=cols[1].text.strip()
-#             match=cols[2].text.strip()
-#             schedule_list.append({
-#                 "date":date,
-#                 "time":time_,
-#                 "match":match
-#             })
-            
-#     print(schedule_list)
-
-# doc["schedule"]=schedule_list
-
-
 #팀당 우승횟수 
 team_win={
     "KIA 타이거즈": "12회(1983, 1986~1989, 1991, 1993, 1996, 1997, 2009, 2017, 2024)",
@@ -117,7 +73,99 @@ team_color={
     "SSG 랜더스": "#CE0E2D"
 }
 
-doc={
-    "team_win":team_win,
-    "team_color":team_color
+team_code_id={
+    "KIA 타이거즈": "HT",
+    "롯데 자이언츠": "LT",
+    "LG 트윈스": "LG",
+    "두산 베어스": "OB",
+    "삼성 라이온즈": "SS",
+    "KT 위즈": "KT",
+    "한화 이글스": "HH",
+    "키움 히어로즈": "WO",
+    "NC 다이노스": "NC",
+    "SSG 랜더스": "SK"
 }
+
+headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
+
+#동적 반복
+for team_name in team_homepage.keys():
+   
+    query=f"{team_name}"
+    uri=f"https://search.naver.com/search.naver?query={query}"
+    res=requests.get(uri,headers=headers)
+    soup=BeautifulSoup(res.text,'html.parser')
+
+#팀 이미지 가져오기
+    team_image=soup.select_one('.api_cs_wrap .thmb img')
+    image_uri=team_image['src']if team_image and team_image.has_attr('src')else ""
+
+#팀당 감독 들고오기
+    team_manage=soup.select_one('.detail .class_etcinfo_sportsgame_managerTitle + dd a')
+    manager=team_manage.get_text(strip=True) if team_manage else ""
+
+
+    # team_id=team_code_id[team_name]
+    # kbo_uri=f"https://www.koreabaseball.com/Schedule/Schedule.aspx?seriesId=0&teamId={team_id}"
+    # driver.get(kbo_uri)
+    # time.sleep(2)
+    # html=driver.page_source
+    # soup=BeautifulSoup(html,'html.parser')
+    # sows=soup.select('table.tbl>tbody>tr')
+
+    # schedule_list=[]
+    # for row in rows:
+    #     cols=row.find_all("td")
+    #     if len(cols)>=5:
+            
+
+#팀 별 경기일정 가져오기 
+    team_id=team_code_id[team_name]
+    uri=f"https://www.koreabaseball.com/Schedule/Schedule.aspx?seriesId=0&teamId={team_id}"
+    driver.get(uri)
+    time.sleep(2)
+
+    soup=BeautifulSoup(driver.page_source, 'html.parser')
+    rows=soup.select('table.tbl >tbody>tr')
+
+    schedule_list=[]
+    current_date=""
+
+    for row in rows:
+        tds = row.find_all("td")
+    
+    # 최소한 날짜, 시간, 팀1, vs, 팀2가 있어야 함
+    
+        if 'day' in tds[0].get("class", []):
+            current_date = tds[0].get_text(strip=True)
+            time_ = tds[1].get_text(strip=True)
+            team1 = tds[2].get_text(strip=True)
+            team2 = tds[4].get_text(strip=True)
+        else:
+            time_ = tds[0].get_text(strip=True)
+            team1 = tds[1].get_text(strip=True)
+            team2 = tds[3].get_text(strip=True)
+
+        short_name=team_name.split()[0].replace(" ","")
+        if short_name not in (team1+team2).replace(" ",""):
+            continue
+
+        game = {
+            "date": current_date,
+            "time": time_,
+            "teams": f"{team1}{team2}"
+            }
+        
+        schedule_list.append(game)
+
+    doc={
+        "team_name":team_name,
+        "team_image":image_uri,
+        "team_location":team_location[team_name],
+        "team_manage":manager,
+        "team_win":team_win[team_name],
+        "team_color":team_color[team_name],
+        "team_homepage":team_homepage[team_name],
+        "team_schedule": schedule_list
+    }
+    teams_col.replace_one({"team_name":team_name},doc,upsert=True)
