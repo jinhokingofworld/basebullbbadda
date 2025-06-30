@@ -21,11 +21,8 @@ def read_users():
     
     #DB에 중복여부 체크후 중복시 응답실패 반환
     IDcheck = db.user.find_one({'id': ID})
-    if ID == IDcheck ['id']:
+    if IDcheck:
         return jsonify({'result': 'fail','msg' : '중복된 아이디입니다.','id' : ID})
-
-    
-
 
     # DB에 도큐먼트 형태로 변환
     doc = { 'id' : ID, 'pw': PW, 'nickname': Nickname, 'idol' :'', 'likes': [] }
@@ -67,11 +64,15 @@ def bring_users():
     return jsonify({'result': 'success', 'msg' : nickname + '님 환영합니다.', 'nickname' : nickname, 'url' : '/'})
 
 #로그아웃 api 응답하는 부분
-@user_page.route('/api/logout', methods=['GET','POST'])
+@user_page.route('/api/logout', methods=['GET', 'POST'])
 def out_users():
-    session['id'] = ""
+    session.clear()  # 세션 전체 삭제
+    return jsonify({'result': 'success', 'msg': '로그아웃 되었습니다.'})
     
-
+# 마이 페이지 동적 라우팅
+@user_page.route('/<id>')
+def routing_myPage(id):
+    return '<h1>' + id +'의 myPage입니다</h1>'
 
 # 로그인 페이지 라우팅
 @user_page.route('/login')
