@@ -12,9 +12,11 @@
     <link rel="stylesheet" href="../static/css/index.css">
     <style>
         .all {
+            display:flex;
             justify-content: space-between;
             align-items: center;
-            padding: 40px;
+            padding: 20px;
+            gap: 25px;
         }
     </style>
 </head>
@@ -56,55 +58,27 @@
         </div>
 
         <!--팀기사 들어갈 곳-->
-        <div class="all">
+        <div class="all" style="white-space: nowrap;">
             <div class="list-group"
-                style="max-width: 500px; max-height: 300px; overflow: scroll; display: inline-block; ">
-                <a href="#" class="list-group-item list-group-item-action active">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">List group item heading</h5>
-                        <small>3 days ago</small>
-                    </div>
-                    <p class="mb-1">Some placeholder content in a paragraph.</p>
-                    <small>And some small print.</small>
-                </a>
+                style="max-width: 500px; max-height: 300px; overflow: scroll; ">
+                {% for article in team['team_news']%}
+                {% if article.title and article.link and article.content and article.date and article.image %}
                 <a href="#" class="list-group-item list-group-item-action">
                     <div class="d-flex w-100 justify-content-betw een">
-                        <h5 class="mb-1">List group item heading</h5>
-                        <small class="text-muted">3 days ago</small>
+                        <h5 class="mb-1">{{article.title}}</h5>
+                        <small class="text-muted">{{article.date}}</small>
                     </div>
-                    <p class="mb-1">Some placeholder content in a paragraph.</p>
-                    <small class="text-muted">And some muted small print.</small>
+                    <p class="mb-1">{{article.content}}</p>
+                    <small class="text-muted">
+                        <a href="{{article.link}}" target="_blank">{{article.link}}</a></small>
                 </a>
-                <a href="#" class="list-group-item list-group-item-action">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">List group item heading</h5>
-                        <small class="text-muted">3 days ago</small>
-                    </div>
-                    <p class="mb-1">Some placeholder content in a paragraph.</p>
-                    <small class="text-muted">And some muted small print.</small>
-                </a>
-                <a href="#" class="list-group-item list-group-item-action">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">List group item heading</h5>
-                        <small class="text-muted">3 days ago</small>
-                    </div>
-                    <p class="mb-1">Some placeholder content in a paragraph.</p>
-                    <small class="text-muted">And some muted small print.</small>
-                </a>
-                <a href="#" class="list-group-item list-group-item-action">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">List group item heading</h5>
-                        <small class="text-muted">3 days ago</small>
-                    </div>
-                    <p class="mb-1">Some placeholder content in a paragraph.</p>
-                    <small class="text-muted">And some muted small print.</small>
-                </a>
+                {% endif %}
+                {% endfor %}
             </div>
-            +
 
             <!--경기일정 들어갈 곳 -->
             <div class="list-schedule"
-                style="max-width: 540px; min-width: 500px; max-height: 300px; overflow: scroll; display: inline-block; ">
+                style="max-width: 540px; min-width: 400px; max-height: 300px; overflow: scroll;">
                 {% for schedule in team['team_schedule']%}
                 {% if schedule.date and schedule.time and schedule.teams %}
                 <a href="#" class="list-group-item list-group-item-action active">
