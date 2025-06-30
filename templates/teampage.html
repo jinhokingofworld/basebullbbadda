@@ -136,11 +136,12 @@
 
     <script>
     function postComment() {
-
+        
         let dataComment = $('#comment_content').val().trim();
         // console.log(dataComment);
         // let temp_html = `<textarea> ${dataComment}</textarea>`;
-                
+        let team_id = $('#comment_button').data('team_id');
+        console.log("팀 아이디:", team_id);
         if(dataComment == "") {
             alert("내용이 없습니다.");
             return;
@@ -154,12 +155,12 @@
         success: function(response) {
             if(response['logged_in'] == true) {
                 
-                    let team_id = $('#comment_button').data('team_id');
+                    
                  // 댓글 작성 api 요청하는 부분
                     $.ajax({
                     type :'POST',
                     url: `/${team_id}/comment`,
-                    data: { comment: dataComment},
+                    data: { 'comment': dataComment},
                     success: function(response) {
                         if(response['result'] == 'success') {
                             alert(response['msg'])
