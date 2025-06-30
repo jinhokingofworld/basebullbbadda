@@ -71,27 +71,28 @@ def scrapRanking():
 @app.route('/api/session')
 def get_session():
     if 'id' in session: #session은 리스트 형태
-        return jsonify({'logged_in': True, 'id': session['id']})
+        return jsonify({'logged_in': True, 'id': session['id'], 'nickname': session['nickname']})
     else:
         return jsonify({'logged_in': False})
-
-@app.route('/api/getUserNickname', methods=['GET'])
-def getNickname():
-    id = session.get('id')
-    if not id:
-        return jsonify({'error': 'Not logged in'}), 401
-
-    result = db.user.find_one({'id': id}, {'_id': 0})
-    if not result:
-        return jsonify({'error': 'User not found'}), 404
-
-    return result['nickname']
 
 #팀 순위 api 요청에 응답
 @app.route('/api/ranking')
 def getRanking():
    scrapedRanking = scrapRanking()
    return scrapedRanking
+
+#메인페이지 유저 이미지 요청 처리
+@app.route('/api/getUserImg', methods=['GET'])
+def getUserImg():
+    #세션 아이디 확인
+    element = get_session()
+    #로그인 상태가 아니면 종료
+    if not element['logged_in']:
+      return jsonify({'msg': '로그인 상태가 아닙니다.'})
+    # 세션과 아이디가 같은 회원의 idol을 반환 //좋아하는 선수 이미지 저장
+    target = db.user.find_one({'id': element['id']}, {'_id': 0})
+    img = target['idol']
+    return jsonify({'msg' : 'success', 'img' : img})
 
 # 메인 페이지 주소
 @app.route('/')

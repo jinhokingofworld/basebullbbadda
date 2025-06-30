@@ -23,7 +23,7 @@
                 <!-- <img rel="logoImg" src="#"> -->
             </div></a>
             <div class="mainProfile">
-                <a href="/user/login"><img id="mainProfileImg" src="https://i.namu.wiki/i/HWL5tg8hqagW8dHBBJMbOoYdEGvyQAkbki_50A0NUXHaluRcIYWcJfnMVWN9xWM3bDb1-8NbirkdubZ3niZcWhOqGFOESg2RClcEeJcvjaB3fSZY324Yi8_9yXYfL1eRZ5xRZP4ucYxLGAxi0DKX_A.webp" /></a>
+                <a id="mainMyPage" href="/user/login"><img id="mainProfileImg" src="https://i.namu.wiki/i/HWL5tg8hqagW8dHBBJMbOoYdEGvyQAkbki_50A0NUXHaluRcIYWcJfnMVWN9xWM3bDb1-8NbirkdubZ3niZcWhOqGFOESg2RClcEeJcvjaB3fSZY324Yi8_9yXYfL1eRZ5xRZP4ucYxLGAxi0DKX_A.webp" /></a>
                 <p id="mainNickname"></p>
             </div>
         </div>
@@ -97,7 +97,9 @@
 
     </div><!-- 컨테이너 끝 -->
 
+    <!-- JS 시작 -->
     <script>
+        // 페이지 로딩 전 실행
         $(document).ready(function() {
             //로그인 확인
             $.ajax({
@@ -105,27 +107,33 @@
                 url: "/api/session",
                 data: {},
                 success: function(response) {
+                    //로그인 상태면 True
                     if(response['logged_in']) {
-                        //로그인이면 네비게이션 로그인/로그아웃 변경
-                        $('#loginButton').attr('href', '/user/logout');
+                        //네비게이션 로그인/로그아웃 변경
+                        $('#loginButton').attr('href', '/user/api/logout');
                         $('#loginButton').text('로그아웃');
-                        $('#mainNickname').text(response['id']);
+                        $('#mainNickname').text(response['nickname']);
+
+                        //동적 생성되는 마이페이지로 가는 링크 
+                        //주소는 /user/<id>
+                        $('#mainMyPage').attr('href', '/user/' + resonse['id'])
+
+                        //프로필 이미지 DB요청
+                        $.ajax({
+                            type: "GET",
+                            url: "/api/getUserImg",
+                            data: {},
+                            success: function(response) {
+                                if (response['msg'] == success)
+                                    $('#mainProfileImg').attr("src", response['img']);
+                            }
+                        });
 
                     }
                 }
             });
 
             
-
-            //닉네임 DB요청
-            $.ajax({
-                type: "GET",
-                url: "api/getUserNickname",
-                data: {},
-                success: function(response) {
-                    $('#mainNickname').val(response);
-                }
-            });
         });
 
         //로그아웃 API 요청

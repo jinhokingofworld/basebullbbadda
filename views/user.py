@@ -61,8 +61,9 @@ def bring_users():
         return jsonify({'result':'fail','msg' : ' 회원정보가 올바르지 않습니다.','id' : input_ID})
     
     # 가져온 정보 일치시 로그인 성공 & 응답 성공 반환
-    #세션 등록
+    #id와 nickname을 세션 등록
     session['id'] = target_user['id']
+    session['nickname'] = nickname
     return jsonify({'result': 'success', 'msg' : nickname + '님 환영합니다.', 'nickname' : nickname, 'url' : '/'})
 
 #로그아웃 api 응답하는 부분
