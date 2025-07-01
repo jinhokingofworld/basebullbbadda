@@ -157,7 +157,9 @@
                 data-team_id="{{team_id}}" type="button">등록</button>
                 <!-- 댓글 리스트가 들어갈 곳 -->
             <div onclick="load_comments()" class="comment-list" id="list_content">
-
+                   <!-- </div>
+                            <p><span class="date">${comment_date}</span></p>
+                            <p class ="comments" id="each_comment "></p> -->
             </div> 
                 
         </div>
@@ -192,7 +194,7 @@
                             success: function (response) {
                                 if (response['result'] == 'success') {
                                     alert(response['msg'])
-                                    function load_comments()
+                                    load_comments();
                                     // // 팀페이지로 리디렉션 (제자리 리디렉션)
                                     // window.location.href = response['url'];
                                 }
@@ -212,36 +214,40 @@
             });
         }
 
+        // 댓글 호출 함수
         function load_comments() {
-
-            let team_id = "{{team['team_name']}}"
+            console.log("댓글호출함수 호출 되었음");
+            let team_id = "{{team['team_name']}}";
             let encoded_team_id = encodeURIComponent(team_id);
+            
+           
 
+            //DB에서 팀별 댓글 추출 API 요청하는 부분
             $.ajax({
                 type: 'GET',
                 url: `/team/${encoded_team_id}/comment`,
                 data: {},
                 success: function(response) {
-                    if(response['result'] == success) {
-                        let comment_cnt =count(response['comment'[0]])
-                        for(let i=0; i<comments_cnt; i++)
-                            if(team_id = response['comment'][0])
-                                let coomment_team_id = response['comment'[0]];
-                                let comment_user_id =response['comment'[1]];
-                                let comment_user_nickname=response['comment'[2]];
-                                let comment_commentText= response['comment'[3]];
-                                let comment_date = response['comment'[4]];
-                                
-                                let temp_html =`
-                                <p><span class="date">${comment_date}</span></p>
-                                <p class ="comments" id="each_comment "></p>`;
-                                $("#each_comment").append(temp_html);
-                        }
-                    }
-                }
+                    if(response['result'] == 'success') {
+                        console.log("응답 성공했음")
+                        let comments = response['comments'];  // ✅ 배열임
+                        
+                         // 데이터 받기전 기존 댓글 삭제
+                        $("#list_content").empty();
 
 
-            })
+                        comments.forEach((cmt) => {
+                        let temp_html =`
+                         <div class="comment-items">
+                         <p> ${cmt.nickname} <small>${cmt.date}}</small> </p>
+                         <p> ${cmt.comment}</p>
+                         </div>
+                         `;
+                            $("#list_content").append(temp_html);
+                        })
+                    } 
+                }  
+            });
         }
 
 
