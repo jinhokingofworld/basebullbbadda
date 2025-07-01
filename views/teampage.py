@@ -1,7 +1,7 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"        # TensorFlow 로그 제거
 os.environ["DISABLE_TFLITE_DELEGATE"] = "1" 
-import requests
+import requests, time
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 from selenium import webdriver
@@ -100,7 +100,7 @@ headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/53
 #팀 뉴스기사 가져오기 
 def get_kbo_news(team_name):
     driver.get("https://www.koreabaseball.com/MediaNews/News/BreakingNews/List.aspx")
-    time.sleep(2)
+    time.sleep(1)
 
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     items = soup.select("ul.boardPhoto > li")
@@ -138,9 +138,9 @@ def get_kbo_news(team_name):
             break
     return news_list
 
-#동적 반복
-for team_name in team_homepage.keys():
-   
+# 스크랩 지옥 시작
+def scrapStart(team_name): 
+    #동적 반복
     query=f"{team_name}"
     uri=f"https://search.naver.com/search.naver?query={query}"
     res=requests.get(uri,headers=headers)
@@ -159,7 +159,7 @@ for team_name in team_homepage.keys():
     team_id=team_code_id[team_name]
     uri=f"https://www.koreabaseball.com/Schedule/Schedule.aspx?seriesId=0&teamId={team_id}"
     driver.get(uri)
-    time.sleep(2)
+    time.sleep(1)
 
     soup=BeautifulSoup(driver.page_source, 'html.parser')
     rows=soup.select('table.tbl >tbody>tr')
@@ -215,6 +215,11 @@ for team_name in team_homepage.keys():
 #정보 연결 
 @team_page.route('/<teamName>')
 def team_detail(teamName):
+    # now = time.time()
+    # # lastUpdatedTime = db.teams_col.find_one({})
+    
+    # #스크랩 시작하는 부분. 페이지 이동 시 스크랩.
+    scrapStart(teamName)
     #팀 정보 객체 찾아서 리디렉션과 동시에 던져줌
     team_data=teams_col.find_one({'team_name' : teamName})
     return render_template("teampage.html",team = team_data)
