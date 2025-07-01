@@ -283,3 +283,6 @@ pyrightconfig.json
 
 .pyc
 views/__pycache__/user.cpython-313.pyc
+views/__pycache__/__init__.cpython-313.pyc
+views/__pycache__/player.cpython-313.pyc
+views/__pycache__/user.cpython-313.pyc

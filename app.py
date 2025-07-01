@@ -30,16 +30,11 @@ def scrapRanking():
     resultList = []
     now = time.time()
 
-    #결과가 저장될 딕셔너리
+    #결과가 저장될 형식
     doc = {
         "list": resultList,
-        "lastUpdatedTime": {
-            "time": now
-        }
+        "lastUpdatedTime": now
     }
-
-    #기존 콜렉션 삭제
-    db.ranking.drop()
 
     # 12개씩 잘라서 딕셔너리로 변환
     for i in range(0, 120, 12):
@@ -49,10 +44,11 @@ def scrapRanking():
             resultList.append(entry)
 
     #DB에 저장
-    db.ranking.insert_one(doc)
+    db.ranking.replace_one({}, doc, upsert=True)
     
     #DB에서 출력
     result = db.ranking.find_one({}, {'_id': 0})
+
     return result # scrapRanking() 끝
 
 #세션 확인하는 API
@@ -70,7 +66,7 @@ def getRanking():
     now = time.time()
     #DB에서 마지막으로 저장한 시간 lastUpdatedTime 찾아서 현재와 비교
     target = db.ranking.find_one()
-    lastUpdatedTime = target['lastUpdatedTime']['time']
+    lastUpdatedTime = float(target['lastUpdatedTime'])
     #10분 이상 지났으면,
     if (now - lastUpdatedTime) >= 600:
         #새로 스크랩 해오기
