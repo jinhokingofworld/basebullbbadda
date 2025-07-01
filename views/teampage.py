@@ -197,6 +197,7 @@ def scrapStart(team_name):
     #뉴스 기사 가져오기
     news_list=get_kbo_news(team_name)
 
+    now=time.time()
     doc={
         "team_name":team_name,
         "team_image":image_uri,
@@ -206,20 +207,43 @@ def scrapStart(team_name):
         "team_color":team_color[team_name],
         "team_homepage":team_homepage[team_name],
         "team_schedule": schedule_list,
-        "team_news":news_list
+        "team_news":news_list,
+        "lastUpdatetime": now
     }
-    teams_col.replace_one({"team_name":team_name},doc,upsert=True)
 
+    # teams_col.replace_one({"team_name":team_name},doc,upsert=True)
+    teams_col.drop()
+    # teams_col.insert_one(doc)
 
+def dbcall(teamName):
+    target = teams_col.find_one({"team_name":teamName})
+    doc={
+        "team_name":teamName,
+        "team_image":target['img_url'],
+        "team_location":team_location[teamName],
+        "team_manage":target['team_manage'],
+        "team_win":team_win[teamName],
+        "team_color":team_color[teamName],
+        "team_homepage":team_homepage[teamName], 
+        "team_schedule": target['team_schedule'],#리스트 객체인뎁숑
+        "team_news":target['team_news'], #얘도 똑같애염
+        "lastUpdatetime": target['lastUpdatetime']
+    }
 
 #정보 연결 
 @team_page.route('/<teamName>')
 def team_detail(teamName):
-    # now = time.time()
-    # # lastUpdatedTime = db.teams_col.find_one({})
+    now = time.time()
+    target=teams_col.find.one()
+    lastUpdatetime=target['lastUpdatetime']
     
-    # #스크랩 시작하는 부분. 페이지 이동 시 스크랩.
-    scrapStart(teamName)
+    if(now-lastUpdatetime)>=3600:
+        scrapStart(teamName)
+    else: 
+        dbcall(teamName)
+        
+
+    # # lastUpdatedTime = db.teams_col.find_one({})
     #팀 정보 객체 찾아서 리디렉션과 동시에 던져줌
     team_data=teams_col.find_one({'team_name' : teamName})
     return render_template("teampage.html",team = team_data)
