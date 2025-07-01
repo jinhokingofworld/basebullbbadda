@@ -150,16 +150,18 @@
         <!-- 댓글상자 들어갈 곳"> </iv> -->
 
         <div class="community-box" id="community">
-            <!-- <img src = "프로필사진">댓글 프로필이 들어갈 부분></img>
-             <p class="아이디"> 댓글아이디가 들어갈 부분 </p> -->
-            <p><span class="date"> 날짜가 들어갈 부분</span></p>
+             <!-- <img src ="comment-profile_img"> 프로필이미지가 들어갈 부분 </p> -->
+            <p><span class="comment-nickname">get('session['nickname']','댓글 작성에는 로그인이 필요합니다')</span></p>
             <p><textarea class="comment-box" id="comment_content" placeholder="댓글을 입력하세요."></textarea></p>
             <button onclick="postComment()" class=" btn btn-primary btnComment" id="comment_button"
                 data-team_id="{{team_id}}" type="button">등록</button>
-        </div>
-        <!-- <hr>
-        <p class = "comment_commentText" id="commentText"></p> -->
+                <!-- 댓글 리스트가 들어갈 곳 -->
+            <div onclick="load_comments()" class="comment-list" id="list_content">
 
+            </div> 
+                
+        </div>
+    
     </div>
 
     <script>
@@ -190,8 +192,9 @@
                             success: function (response) {
                                 if (response['result'] == 'success') {
                                     alert(response['msg'])
-                                    // 팀페이지로 리디렉션 (제자리 리디렉션)
-                                    window.location.href = response['url'];
+                                    function load_comments()
+                                    // // 팀페이지로 리디렉션 (제자리 리디렉션)
+                                    // window.location.href = response['url'];
                                 }
                                 else {
                                     alert(response['msg'])
@@ -207,6 +210,38 @@
                     }
                 }
             });
+        }
+
+        function load_comments() {
+
+            let team_id = "{{team['team_name']}}"
+            let encoded_team_id = encodeURIComponent(team_id);
+
+            $.ajax({
+                type: 'GET',
+                url: `/team/${encoded_team_id}/comment`,
+                data: {},
+                success: function(response) {
+                    if(response['result'] == success) {
+                        let comment_cnt =count(response['comment'[0]])
+                        for(let i=0; i<comments_cnt; i++)
+                            if(team_id = response['comment'][0])
+                                let coomment_team_id = response['comment'[0]];
+                                let comment_user_id =response['comment'[1]];
+                                let comment_user_nickname=response['comment'[2]];
+                                let comment_commentText= response['comment'[3]];
+                                let comment_date = response['comment'[4]];
+                                
+                                let temp_html =`
+                                <p><span class="date">${comment_date}</span></p>
+                                <p class ="comments" id="each_comment "></p>`;
+                                $("#each_comment").append(temp_html);
+                        }
+                    }
+                }
+
+
+            })
         }
 
 
