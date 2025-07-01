@@ -248,38 +248,39 @@ def team_detail(teamName):
     team_data=teams_col.find_one({'team_name' : teamName})
     return render_template("teampage.html",team=team_data)
 
-#DB에서 팀별 댓글 추출 API 부분
-@team_page.route('/<team_id>/comments', methods=['GET'])
+#DB에서 팀별 댓글 추출 API 응답하는 부분
+@team_page.route('/<team_id>/comment', methods=['GET'])
 def get_team_comments(team_id):
+    print("댓글 추출 api에 응답합니다.")
     comments = list(db.team_comment.find({'team_id': team_id}, {'_id': False}))
+    print()
+    print("요청 들어온 매개변수 팀아이디 ",team_id)
+    print("comments의 팀아이디",comments)
     return jsonify({'result': 'success', 'comments': comments})
 
 
 # 댓글 등록 api 응답하는 부분
 @team_page.route('/<team_id>/comment', methods =['POST'])
 def post_comment(team_id):
-
-    if 'id' not in session:
-        return jsonify({'result': 'fail', 'msg': '로그인이 필요합니다.', 'url': '/user/login'})
-    
+   
+ 
      # 입력받은 Comment 데이터 가져오기
-    input_comment = request.form['comment']
-    
+    input_comment = request.form.get('comment','').strip()
+
+    if(input_comment == ''):
+        return jsonify({'result': 'fail', 'msg': '내용을 입력하세요.'})
+
+
     #세션된 ID,닉네임 가져오기
     target_user = session.get('id')
-    Nickname = session.get('nickname')
+    target_nickname = session.get('nickname')
 
     # DB에 도큐멘트 형태로 변환
     doc = {
-        'team_id': team_id, 'id' : target_user, 'nickname' : Nickname, 'comment' : input_comment,  'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S') } #좋아요 추가시 user db와 이름혼동문제 
-    
+        'team_id': team_id, 'id' : target_user, 'nickname' :target_nickname, 'comment' : input_comment,  'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S') } #좋아요 추가시 user db와 이름혼동문제 
+    db.team_comment.insert_one(doc)
     # DB에 아이디, 닉네임과 댓글 내용 데이터 저장
-    # db.team_comment.insert_one(doc)
-
+    print(doc)
     # 댓글 등록 성공 (응답 성공 반환)
-    return jsonify( {'result': 'success','msg' : '댓글 등록 성공!', 'nickname' : Nickname, 'url' : f'/{team_id}'})
+    return jsonify( {'result': 'success','msg' : '댓글 등록 성공!', 'nickname' : target_nickname, 'url' : team_id})
     
-    # #id와 nickname을 세션 등록
-    # session['id'] = target_user['id']
-    # session['nickname'] = nickname
-    # return jsonify({'result': 'success', 'msg' : nickname + '님 환영합니다.', 'nickname' : nickname, 'url' : '/'})
