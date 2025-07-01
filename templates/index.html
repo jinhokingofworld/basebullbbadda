@@ -66,17 +66,18 @@
             success: function(response){
                 let ranks = response;
                 //받은 api로 테이블 동적 생성
-                for (let i = 0; ranks.length; i++) {
+                for (let i = 0; ranks['list'].length; i++) {
                     makeTable(
-                        ranks[i]["순위"],
-                        ranks[i]["팀명"],
-                        ranks[i]["경기"],
-                        ranks[i]["승"],
-                        ranks[i]["패"],
-                        ranks[i]["무"],
-                        ranks[i]["승률"]
+                        ranks['list'][i]["순위"],
+                        ranks['list'][i]["팀명"],
+                        ranks['list'][i]["경기"],
+                        ranks['list'][i]["승"],
+                        ranks['list'][i]["패"],
+                        ranks['list'][i]["무"],
+                        ranks['list'][i]["승률"]
                     );
                 }
+                $("#rankingTable").append(html);
             }
         });
 
