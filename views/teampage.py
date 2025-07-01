@@ -112,13 +112,24 @@ def get_kbo_news(team_name):
         image_tag = item.select_one(".boardPhoto .photo > a img")
 
         if title_tag:
+            href = title_tag.get('href', '')
+            if href.startswith("http"):
+                link = href
+            elif href.startswith("View.aspx"):
+                link = "https://www.koreabaseball.com/MediaNews/News/BreakingNews/" + href
+            elif href.startswith("/"):
+                link = "https://www.koreabaseball.com" + href
+            else:
+                link = "https://www.koreabaseball.com/" + href
+
             news = {
                 "title": title_tag.get_text(strip=True),
-                "link": "https://www.koreabaseball.com" + title_tag['href'],
+                "link": link,
                 "content": content_tag.get_text(strip=True) if content_tag else "",
                 "date": date_tag.get_text(strip=True) if date_tag else "",
-                "image": image_tag['src'] if image_tag and image_tag.has_attr('src') else ""
+                "image":image_tag['src'] if image_tag and image_tag.has_attr('src') else ""
             }
+
             # 팀이름필터링
             if team_name.split()[0] in news["title"]:
                 news_list.append(news)
@@ -233,7 +244,7 @@ def post_comment(team_id):
         'team_id': team_id, 'id' : target_user, 'nickname' : Nickname, 'comment' : input_comment,  'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S') } #좋아요 추가시 user db와 이름혼동문제 
     
     # DB에 아이디, 닉네임과 댓글 내용 데이터 저장
-    db.team_comment.insert_one(doc)
+    # db.team_comment.insert_one(doc)
 
     # 댓글 등록 성공 (응답 성공 반환)
     return jsonify( {'result': 'success','msg' : '댓글 등록 성공!', 'nickname' : Nickname, 'url' : f'/{team_id}'})
