@@ -143,8 +143,7 @@
 
     </div>
 
-        <!-- <div class="로그인시 보이는 클래스 삽입 "> </div> -->
-        <div class="schedule-box" id="schedule-box">경기 일정</div>
+        <!-- 댓글상자 들어갈 곳"> </iv> -->
         
         <div class="community-box" id="community">
             <!-- <img src = "프로필사진">댓글 프로필이 들어갈 부분></img>
@@ -162,14 +161,9 @@
     function postComment() {
         
         let dataComment = $('#comment_content').val().trim();
-        // console.log(dataComment);
         // let temp_html = `<textarea> ${dataComment}</textarea>`;
-        let team_id = $('#comment_button').data('team_id');
-        console.log("팀 아이디:", team_id);
-        if(dataComment == "") {
-            alert("내용이 없습니다.");
-            return;
-        }
+       let team_id = $('#comment_button').data('team_id');
+        console.log("💬 team_id:", team_id);
 
                 //로그인 세션 api 요청하는 부분
         $.ajax({
@@ -180,10 +174,10 @@
             if(response['logged_in'] == true) {
                 
                     
-                 // 댓글 작성 api 요청하는 부분
+                 // 댓글 등록 api 요청하는 부분
                     $.ajax({
                     type :'POST',
-                    url: `/${team_id}/comment`,
+                    url: `/team/<team_id>/comment`,
                     data: { 'comment': dataComment},
                     success: function(response) {
                         if(response['result'] == 'success') {
