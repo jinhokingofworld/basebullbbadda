@@ -246,16 +246,14 @@ def team_detail(teamName):
 
     #팀 정보 객체 찾아서 리디렉션과 동시에 던져줌
     team_data=teams_col.find_one({'team_name' : teamName})
-    return render_template("teampage.html",team=team_data)
+    return render_template("teampage.html",team=team_data, nickname = session.get('nickname','익명'))
 
 #DB에서 팀별 댓글 추출 API 응답하는 부분
 @team_page.route('/<team_id>/comment', methods=['GET'])
 def get_team_comments(team_id):
-    print("댓글 추출 api에 응답합니다.")
+
+    # 댓글 DB중 해당하는 팀의 댓글 추출 후 리스트화
     comments = list(db.team_comment.find({'team_id': team_id}, {'_id': False}))
-    print()
-    print("요청 들어온 매개변수 팀아이디 ",team_id)
-    print("comments의 팀아이디",comments)
     return jsonify({'result': 'success', 'comments': comments})
 
 
@@ -280,7 +278,6 @@ def post_comment(team_id):
         'team_id': team_id, 'id' : target_user, 'nickname' :target_nickname, 'comment' : input_comment,  'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S') } #좋아요 추가시 user db와 이름혼동문제 
     db.team_comment.insert_one(doc)
     # DB에 아이디, 닉네임과 댓글 내용 데이터 저장
-    print(doc)
     # 댓글 등록 성공 (응답 성공 반환)
     return jsonify( {'result': 'success','msg' : '댓글 등록 성공!', 'nickname' : target_nickname, 'url' : team_id})
     

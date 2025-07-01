@@ -144,27 +144,28 @@
 
         </div>
 
+        
         <!-- 댓글상자 들어갈 곳"> </iv> -->
-
-        <div class="community-box" id="community">
-             <!-- <img src ="comment-profile_img"> 프로필이미지가 들어갈 부분 </p> -->
-            <p><span class="comment-nickname">get('session['nickname']','댓글 작성에는 로그인이 필요합니다')</span></p>
-            <p><textarea class="comment-box" id="comment_content" placeholder="댓글을 입력하세요."></textarea></p>
-            <button onclick="postComment()" class=" btn btn-primary btnComment" id="comment_button"
-                data-team_id="{{team_id}}" type="button">등록</button>
-                <!-- 댓글 리스트가 들어갈 곳 -->
-            <div onclick="load_comments()" class="comment-list" id="list_content">
-                   <!-- </div>
-                            <p><span class="date">${comment_date}</span></p>
-                            <p class ="comments" id="each_comment "></p> -->
+        <div class = "container">
+        <div class="card border-primary mb-3" style="width: auto;">
+            <div class = card-header><span class="comment-nickname" id="comment_nickname">{{nickname}}</span></strong></div>
+            <p><textarea class="card-body text-secondary" style="width: 100%; height: 6.25em; border: none; resize: none;" id="comment_content" placeholder="댓글을 입력하세요."></textarea></p>
+            <div>
+                <button onclick="postComment()" style="width: 100px; float:inline-end;" class=" btn btn-primary btnComment" id="comment_button"
+                    data-team_id="{{team_id}}" type="button">등록</button>
+            </div>
+                <div class="list-group"  style="width: 100%; max-height: 300px; overflow-y: scroll; display: inline-block; ">
+                <div class="comment-list text-muted" id="list_content"></div>
+                   <!-- 댓글 리스트가 들어갈 곳 -->
             </div> 
                 
+        </div>
+        </div>
         </div>
     
     </div>
 
     <script>
-
         // 댓글 등록 함수
         function postComment() {
 
@@ -213,8 +214,9 @@
 
         // 댓글 호출 함수
         function load_comments() {
-            console.log("댓글호출함수 호출 되었음");
             let team_id = "{{team['team_name']}}";
+
+            // url 인코딩
             let encoded_team_id = encodeURIComponent(team_id);
             
            
@@ -226,22 +228,26 @@
                 data: {},
                 success: function(response) {
                     if(response['result'] == 'success') {
-                        console.log("응답 성공했음")
+                        // console.log("응답 성공했음")
+                        // DB에서 추출한 값을 응답으로 받음
                         let comments = response['comments'];
                         
                          // 데이터 받기전 기존 댓글 삭제
                         $("#list_content").empty();
 
-
+                        // 배열안을 순회하는 함수
                         comments.forEach((cmt) => {
                         let temp_html =`
-                         <div class="comment-items">
-                         <p> ${cmt.nickname} <small>${cmt.date}</small> </p>
-                         <p> ${cmt.comment}</p>
-                         </div>
+                        <div class="comment-items">
+                            <p><strong> ${cmt.nickname}</strong> <small>${cmt.date}</small> </p>
+                            <p> ${cmt.comment}</p> <hr>
+                            </div>
                          `;
                             $("#list_content").append(temp_html);
                         })
+                        
+                        
+                    
                     } 
                 }  
             });
@@ -249,7 +255,7 @@
 
 
     </script>
-
+    <!-- 새로고침시 댓글함수 호출 (댓글유지) -->
     <script>
     $(document).ready(function() {
         load_comments();
