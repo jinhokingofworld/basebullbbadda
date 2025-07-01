@@ -125,19 +125,29 @@
                         window.location.href = '/'
                     };
 
-                    //좋아하는 기사 로딩
-                    
+                    //좋아하는 기사 로딩 요청
+                    $.ajax({
+                        type: "POST",
+                        url: "/user/api/likes",
+                        data: {'URL' : input},
+                        success: function(response){
+                            
+                        },
+                        error: function() {
+                            alert('즐겨찾기 로딩에 실패했습니다.');
+                        }
+                    });
                 }
             });
         });
 
-        //좋아하는 기사 로딩 inputURL
-        function pickMyTeam() {
-            let input = $('#pickTeam').val();
+        //좋아하는 기사 DB저장요청
+        function takeURL() {
+            let input = $('#inputURL').val();
             $.ajax({
                 type: "POST",
-                url: "/user/api/idol",
-                data: {'idol' : input},
+                url: "/user/api/likes",
+                data: {'URL' : input},
                 success: function(response){
                     alert(response['msg'])
                 },
