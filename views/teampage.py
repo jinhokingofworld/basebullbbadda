@@ -208,9 +208,10 @@ def scrapStart(team_name):
         "team_homepage":team_homepage[team_name],
         "team_schedule": schedule_list,
         "team_news":news_list,
-        "lastUpdatetime": now
+        "lastUpdatedTime": now
     }
 
+    # teams_col.insert_one(doc)
     teams_col.replace_one({"team_name":team_name},doc,upsert=True)
 
 def dbcall(teamName):
@@ -225,7 +226,7 @@ def dbcall(teamName):
         "team_homepage":team_homepage[teamName], 
         "team_schedule": target['team_schedule'],#리스트 객체인뎁숑
         "team_news":target['team_news'], #얘도 똑같애염
-        "lastUpdatetime": target['lastUpdatetime']
+        "lastUpdatedTime": target['lastUpdatedTime']
     }
 
 #정보 연결 
@@ -233,9 +234,9 @@ def dbcall(teamName):
 def team_detail(teamName):
     now = time.time()
     target=teams_col.find_one()
-    lastUpdatetime=target['lastUpdatetime']
+    lastUpdatedTime = float(target['lastUpdatedTime'])
     
-    if(now-lastUpdatetime)>=3600:
+    if now - lastUpdatedTime >=3600:
         scrapStart(teamName)
     else: 
         dbcall(teamName)
