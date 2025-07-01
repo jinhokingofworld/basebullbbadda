@@ -243,6 +243,7 @@ def team_detail(teamName):
         
 
     # # lastUpdatedTime = db.teams_col.find_one({})
+
     #팀 정보 객체 찾아서 리디렉션과 동시에 던져줌
     team_data=teams_col.find_one({'team_name' : teamName})
     return render_template("teampage.html",team=team_data)
