@@ -47,13 +47,12 @@ def scrapRanking():
         if len(chunk) == 12:
             entry = dict(zip(columns, chunk))
             resultList.append(entry)
-    
+
     #DB에 저장
     db.ranking.insert_one(doc)
-
+    
     #DB에서 출력
     result = db.ranking.find_one({}, {'_id': 0})
-
     return result # scrapRanking() 끝
 
 #세션 확인하는 API
