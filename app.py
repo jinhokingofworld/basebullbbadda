@@ -127,7 +127,7 @@ def team_detail(team_id):
     team_name = team_name_map.get(team_id)
     team_data = teams_col.find_one({"team_name": team_name})
 
-    return render_template("teampage.html", team=team_data)
+    return render_template("teampage.html", team=team_data,team_id = team_id)
 
 
 # 서버 실행

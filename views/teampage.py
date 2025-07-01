@@ -218,6 +218,7 @@ def get_team_comments(team_id):
 @team_page.route('/<team_id>/comment', methods =['POST'])
 def post_comment(team_id):
     print("✅ 댓글 등록 요청 도착함")
+    print(team_id)
     # if 'id' not in session:
     #     return jsonify({'result': 'fail', 'msg': '로그인이 필요합니다.', 'url': '/user/login'})
     
