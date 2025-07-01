@@ -163,13 +163,14 @@
     </div>
 
     <script>
+
+        // 댓글 등록 함수
         function postComment() {
 
+            // textarea내 내용 추출
             let dataComment = $('#comment_content').val().trim();
-            // let temp_html = `<textarea> ${dataComment}</textarea>`;
             let team_id = "{{team['team_name']}}"
-            // let team_id = $('#comment_button').data('team_id');
-            console.log("💬 team_id:", team_id);
+           
 
             let encoded_team_id = encodeURIComponent(team_id);
             //로그인 세션 api 요청하는 부분
@@ -199,7 +200,7 @@
                         });
 
                     }
-
+                        // 로그인 x시 false 반환하고 로그인 페이지 이동
                     else {
                         alert(response['msg'])
                         window.location.href = response['url'];  // 로그인 페이지로 리디렉션
