@@ -142,11 +142,11 @@
 
         //닉네임 변경
         function updateNick() {
-            let input = $('changeNick').val();
+            let input = $('#changeNick').val();
             $.ajax({
                 type: "POST",
                 url: "/user/api/updateNick",
-                data: { 'new_nick' : input },
+                data: { 'newNick' : input },
                 success: function(response){
                         alert('닉네임이 ' + response['nickname'] +'으로 변경되었습니다.');
                 },

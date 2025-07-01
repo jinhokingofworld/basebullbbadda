@@ -86,10 +86,11 @@ def bring_users():
 #닉네임변경 api 응답
 @user_page.route('/api/updateNick', methods=['POST'])
 def chg_nick():
-    id = session.get('id') #기존 아이디
-    new = request.form.get('new_nick') #새 닉네임
-    db.user.update_one({'id' : id}, {'$set':{'nickname': new}})
-    session.update('nickname', new)
+    oldId = session.get('id') #기존 아이디
+    new = request.form['newNick'] #새 닉네임
+    print(id, new)
+    db.user.update_one({'id' : oldId}, {'$set':{'nickname': new}})
+    session['nickname'] = new
     return jsonify({'result': 'success', 'msg': '닉네임이 변경 되었습니다.', 'nickname': new})
 
 #로그아웃 api 응답하는 부분
