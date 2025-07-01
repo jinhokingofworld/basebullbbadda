@@ -1,7 +1,7 @@
 import requests, time, copy
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, jsonify, session
 
 app = Flask(__name__)
 from views import create_app

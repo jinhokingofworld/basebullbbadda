@@ -1,7 +1,7 @@
 import os
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"        # TensorFlow 로그 제거
 os.environ["DISABLE_TFLITE_DELEGATE"] = "1" 
-import requests
+import requests, time
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 from selenium import webdriver
@@ -22,6 +22,7 @@ options=Options()
 options.add_argument('--headless')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shu-usage')
+
 
 driver=webdriver.Chrome(options=options)
 
@@ -99,7 +100,7 @@ headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/53
 #팀 뉴스기사 가져오기 
 def get_kbo_news(team_name):
     driver.get("https://www.koreabaseball.com/MediaNews/News/BreakingNews/List.aspx")
-    time.sleep(2)
+    time.sleep(1)
 
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     items = soup.select("ul.boardPhoto > li")
@@ -137,9 +138,9 @@ def get_kbo_news(team_name):
             break
     return news_list
 
-#동적 반복
-for team_name in team_homepage.keys():
-   
+# 스크랩 지옥 시작
+def scrapStart(team_name): 
+    #동적 반복
     query=f"{team_name}"
     uri=f"https://search.naver.com/search.naver?query={query}"
     res=requests.get(uri,headers=headers)
@@ -158,7 +159,7 @@ for team_name in team_homepage.keys():
     team_id=team_code_id[team_name]
     uri=f"https://www.koreabaseball.com/Schedule/Schedule.aspx?seriesId=0&teamId={team_id}"
     driver.get(uri)
-    time.sleep(2)
+    time.sleep(1)
 
     soup=BeautifulSoup(driver.page_source, 'html.parser')
     rows=soup.select('table.tbl >tbody>tr')
@@ -196,6 +197,7 @@ for team_name in team_homepage.keys():
     #뉴스 기사 가져오기
     news_list=get_kbo_news(team_name)
 
+    now=time.time()
     doc={
         "team_name":team_name,
         "team_image":image_uri,
@@ -205,18 +207,44 @@ for team_name in team_homepage.keys():
         "team_color":team_color[team_name],
         "team_homepage":team_homepage[team_name],
         "team_schedule": schedule_list,
-        "team_news":news_list
+        "team_news":news_list,
+        "lastUpdatetime": now
     }
+
     teams_col.replace_one({"team_name":team_name},doc,upsert=True)
 
-
+def dbcall(teamName):
+    target = teams_col.find_one({"team_name":teamName})
+    doc={
+        "team_name":teamName,
+        "team_image":target['team_image'],
+        "team_location":team_location[teamName],
+        "team_manage":target['team_manage'],
+        "team_win":team_win[teamName],
+        "team_color":team_color[teamName],
+        "team_homepage":team_homepage[teamName], 
+        "team_schedule": target['team_schedule'],#리스트 객체인뎁숑
+        "team_news":target['team_news'], #얘도 똑같애염
+        "lastUpdatetime": target['lastUpdatetime']
+    }
 
 #정보 연결 
 @team_page.route('/<teamName>')
 def team_detail(teamName):
+    now = time.time()
+    target=teams_col.find_one()
+    lastUpdatetime=target['lastUpdatetime']
+    
+    if(now-lastUpdatetime)>=3600:
+        scrapStart(teamName)
+    else: 
+        dbcall(teamName)
+        
+
+    # # lastUpdatedTime = db.teams_col.find_one({})
     #팀 정보 객체 찾아서 리디렉션과 동시에 던져줌
     team_data=teams_col.find_one({'team_name' : teamName})
-    return render_template("teampage.html",team = team_data)
+    return render_template("teampage.html",team=team_data)
 
 #DB에서 팀별 댓글 추출 API 부분
 @team_page.route('/<team_id>/comments', methods=['GET'])
