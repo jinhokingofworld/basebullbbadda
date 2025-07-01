@@ -23,6 +23,7 @@ options.add_argument('--headless')
 options.add_argument('--no-sandbox')
 options.add_argument('--disable-dev-shu-usage')
 
+
 driver=webdriver.Chrome(options=options)
 
 #팀 홈페이지 정보
