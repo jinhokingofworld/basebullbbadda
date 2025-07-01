@@ -108,7 +108,23 @@ teams_col = db.teams  # 이거 꼭 있어야 함
 #팀별 페이지로 라우팅
 @app.route('/team/<team_id>')
 def team_detail(team_id):
-    return render_template("teampage.html", team_id)
+    team_name_map = {
+        "Tigers": "KIA 타이거즈",
+        "Giants": "롯데 자이언츠",
+        "Twins": "LG 트윈스",
+        "Bears": "두산 베어스",
+        "Lions": "삼성 라이온즈",
+        "Wiz": "KT 위즈",
+        "Eagles": "한화 이글스",
+        "Heros": "키움 히어로즈",
+        "Dinos": "NC 다이노스",
+        "Landers": "SSG 랜더스"
+    }
+
+    team_name = team_name_map.get(team_id)
+    team_data = teams_col.find_one({"team_name": team_name})
+
+    return render_template("teampage.html", team=team_data,team_id = team_id)
 
 
 # 서버 실행
