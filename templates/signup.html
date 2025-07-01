@@ -82,21 +82,11 @@
             let dataNickname = $('#nickname').val();
             let dataPWchk = $('#pwCheck').val();
 
-            if(dataID== "" || dataPW==""){
-                alert("아이디와 비밀번호를 입력하세요.");
-                return 
-            }
-            
-            // console.log(dataPW,dataPWchk)
-            if(dataPWchk !=  dataPW ) {
-                alert(" 패스워드가 일치하지 않습니다. ");    
-                return 
-            }
         // 회원가입 api 요청하는 부분
         $.ajax({
         type: "POST",
         url: `/user/api/signup`,
-        data: {id: dataID, pw: dataPW, nickname: dataNickname},
+        data: {id: dataID, pw: dataPW, pwchk: dataPWchk, nickname: dataNickname},
         success: function (response) {
             if(response['result'] == 'success') {
                 alert(response['msg'])

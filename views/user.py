@@ -14,11 +14,22 @@ db = client.Splint2_Database
 # 회원가입 api 응답하는 부분
 @user_page.route('/api/signup', methods=['POST'])
 def read_users():
-    # DB에 ID,PW,nickname 데이터 저장
+    
+    # 입력값 ID,PW,nickname 데이터 추출
     ID = request.form['id']
     PW = request.form['pw']
+    PWchk = request.form['pwchk']
     Nickname =request.form['nickname']
     
+    if ID == "" or PW =="":
+        return jsonify({'result': 'fail','msg' : "아이디와 비밀번호를 입력하세요"})
+    
+    if PW != PWchk :
+        return jsonify({'result': 'fail','msg' : "패스워드가 일치하지 않습니다"})
+
+    if Nickname == "":
+        return jsonify({'result': 'fail','msg' : "닉네임을 입력하세요"})
+
     #DB에 중복여부 체크후 중복시 응답실패 반환
     IDcheck = db.user.find_one({'id': ID})
     if IDcheck:
