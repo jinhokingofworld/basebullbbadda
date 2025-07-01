@@ -211,15 +211,13 @@ def scrapStart(team_name):
         "lastUpdatetime": now
     }
 
-    # teams_col.replace_one({"team_name":team_name},doc,upsert=True)
-    teams_col.drop()
-    # teams_col.insert_one(doc)
+    teams_col.replace_one({"team_name":team_name},doc,upsert=True)
 
 def dbcall(teamName):
     target = teams_col.find_one({"team_name":teamName})
     doc={
         "team_name":teamName,
-        "team_image":target['img_url'],
+        "team_image":target['team_image'],
         "team_location":team_location[teamName],
         "team_manage":target['team_manage'],
         "team_win":team_win[teamName],
@@ -234,7 +232,7 @@ def dbcall(teamName):
 @team_page.route('/<teamName>')
 def team_detail(teamName):
     now = time.time()
-    target=teams_col.find.one()
+    target=teams_col.find_one()
     lastUpdatetime=target['lastUpdatetime']
     
     if(now-lastUpdatetime)>=3600:
@@ -246,7 +244,7 @@ def team_detail(teamName):
     # # lastUpdatedTime = db.teams_col.find_one({})
     #팀 정보 객체 찾아서 리디렉션과 동시에 던져줌
     team_data=teams_col.find_one({'team_name' : teamName})
-    return render_template("teampage.html",team = team_data)
+    return render_template("teampage.html",team=team_data)
 
 #DB에서 팀별 댓글 추출 API 부분
 @team_page.route('/<team_id>/comments', methods=['GET'])
