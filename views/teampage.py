@@ -1,8 +1,12 @@
+import os
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"        # TensorFlow 로그 제거
+os.environ["DISABLE_TFLITE_DELEGATE"] = "1" 
 import requests
 from bs4 import BeautifulSoup
 from pymongo import MongoClient
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
 import time
 from flask import Flask, Blueprint, render_template, jsonify,request,session
 
@@ -91,6 +95,36 @@ team_code_id={
 
 headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
 
+#팀 뉴스기사 가져오기 
+def get_kbo_news(team_name):
+    driver.get("https://www.koreabaseball.com/MediaNews/News/BreakingNews/List.aspx")
+    time.sleep(2)
+
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    items = soup.select("ul.boardPhoto > li")
+
+    news_list = []
+    for item in items:
+        title_tag = item.select_one("strong > a")
+        content_tag = item.select_one(".txt p")
+        date_tag = item.select_one("span.date")
+        image_tag = item.select_one(".boardPhoto .photo > a img")
+
+        if title_tag:
+            news = {
+                "title": title_tag.get_text(strip=True),
+                "link": "https://www.koreabaseball.com" + title_tag['href'],
+                "content": content_tag.get_text(strip=True) if content_tag else "",
+                "date": date_tag.get_text(strip=True) if date_tag else "",
+                "image": image_tag['src'] if image_tag and image_tag.has_attr('src') else ""
+            }
+            # 팀이름필터링
+            if team_name.split()[0] in news["title"]:
+                news_list.append(news)
+        if len(news_list)==5:
+            break
+    return news_list
+
 #동적 반복
 for team_name in team_homepage.keys():
    
@@ -106,20 +140,6 @@ for team_name in team_homepage.keys():
 #팀당 감독 들고오기
     team_manage=soup.select_one('.detail .class_etcinfo_sportsgame_managerTitle + dd a')
     manager=team_manage.get_text(strip=True) if team_manage else ""
-
-
-    # team_id=team_code_id[team_name]
-    # kbo_uri=f"https://www.koreabaseball.com/Schedule/Schedule.aspx?seriesId=0&teamId={team_id}"
-    # driver.get(kbo_uri)
-    # time.sleep(2)
-    # html=driver.page_source
-    # soup=BeautifulSoup(html,'html.parser')
-    # sows=soup.select('table.tbl>tbody>tr')
-
-    # schedule_list=[]
-    # for row in rows:
-    #     cols=row.find_all("td")
-    #     if len(cols)>=5:
             
 
 #팀 별 경기일정 가져오기 
@@ -161,6 +181,9 @@ for team_name in team_homepage.keys():
         
         schedule_list.append(game)
 
+    #뉴스 기사 가져오기
+    news_list=get_kbo_news(team_name)
+
     doc={
         "team_name":team_name,
         "team_image":image_uri,
@@ -169,9 +192,11 @@ for team_name in team_homepage.keys():
         "team_win":team_win[team_name],
         "team_color":team_color[team_name],
         "team_homepage":team_homepage[team_name],
-        "team_schedule": schedule_list
+        "team_schedule": schedule_list,
+        "team_news":news_list
     }
-    # teams_col.replace_one({"team_name":team_name},doc,upsert=True)
+    teams_col.replace_one({"team_name":team_name},doc,upsert=True)
+
 
 
 #정보 연결 

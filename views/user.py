@@ -32,6 +32,26 @@ def read_users():
     # 가입 성공 (응답 성공 반환)
     return jsonify({'result': 'success','msg' :'회원가입 성공!', 'nickname' : Nickname , 'url' : '/'})
     
+#회원 탈퇴 api 응답
+@user_page.route('/api/deleteUser', methods=['GET'])
+def delete_users():
+    # DB에 ID,PW,nickname 데이터 저장
+    ID = request.form['id']
+    PW = request.form['pw']
+    Nickname =request.form['nickname']
+    
+    #DB에 중복여부 체크후 중복시 응답실패 반환
+    IDcheck = db.user.find_one({'id': ID})
+    if IDcheck:
+        return jsonify({'result': 'fail','msg' : '중복된 아이디입니다.','id' : ID})
+
+    # DB에 도큐먼트 형태로 변환
+    doc = { 'id' : ID, 'pw': PW, 'nickname': Nickname, 'idol' :'', 'likes': [] }
+    # DB에 저장       
+    db.user.insert_one(doc)
+
+    # 가입 성공 (응답 성공 반환)
+    return jsonify({'result': 'success','msg' :'회원가입 성공!', 'nickname' : Nickname , 'url' : '/'})
 
 # 회원가입 페이지 라우팅
 @user_page.route('/signup')
@@ -39,7 +59,7 @@ def routing_signup():
     return render_template('signup.html')
     
 
- #로그인 api 응답하는 부분
+#로그인 api 응답하는 부분
 @user_page.route('/api/login', methods=['POST'])
 def bring_users():
     
@@ -61,18 +81,49 @@ def bring_users():
     #id와 nickname을 세션 등록
     session['id'] = target_user['id']
     session['nickname'] = nickname
-    return jsonify({'result': 'success', 'msg' : nickname + '님 환영합니다.', 'nickname' : nickname, 'url' : '/'})
+    return jsonify({'result': 'success', 'msg' : f'{nickname}님 환영합니다.', 'nickname' : nickname, 'url' : '/'})
+
+#닉네임변경 api 응답
+@user_page.route('/api/updateNick', methods=['POST'])
+def chg_nick():
+    id = session.get('id') #기존 아이디
+    new = request.form.get('new_nick') #새 닉네임
+    db.user.update_one({'id' : id}, {'$set':{'nickname': new}})
+    session.update('nickname', new)
+    return jsonify({'result': 'success', 'msg': '닉네임이 변경 되었습니다.', 'nickname': new})
 
 #로그아웃 api 응답하는 부분
 @user_page.route('/api/logout', methods=['GET', 'POST'])
 def out_users():
     session.clear()  # 세션 전체 삭제
     return jsonify({'result': 'success', 'msg': '로그아웃 되었습니다.'})
-    
+
+#회원탈퇴 api 응답
+@user_page.route('/api/delete', methods=['POST'])
+def del_users():
+    id = request.form.get('id')
+    session.clear() # 세션 전체 삭제
+    db.user.delete_one({'id': id}) #계정 삭제
+    return jsonify({'result': 'success', 'msg': '계정이 삭제 되었습니다.'})
+
+#좋아하는 팀 api 응답하는 부분
+@user_page.route('/api/idol', methods=['POST'])
+def chg_pic():
+    id = session.get('id') #기존 아이디
+    team_name = request.form.get('idol')
+    #좋아하는 팀의 이름으로 데이터베이스 검색
+    targetTeam = db.teams.find_one({'team_name': team_name})
+    #이미지 파일 추출
+    teamImg = targetTeam['team_image']
+    #유저DB에 저장
+    db.user.update_one({'id' : id} , {'$set':{'idol': teamImg}})
+    return jsonify({'result': 'success', 'msg': f'{targetTeam['team_name']}이 좋아하는 팀으로 등록 되었습니다.'})
+
 # 마이 페이지 동적 라우팅
 @user_page.route('/<id>')
 def routing_myPage(id):
-    return '<h1>' + id +'의 myPage입니다</h1>'
+    my_data=db.user.find_one({'id' : id})
+    return render_template('myPage.html', MyData = my_data)
 
 # 로그인 페이지 라우팅
 @user_page.route('/login')

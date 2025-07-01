@@ -85,14 +85,22 @@ def getRanking():
 @app.route('/api/getUserImg', methods=['GET'])
 def getUserImg():
     #세션 아이디 확인
-    element = get_session()
+    user_id = session.get('id')
+   
     #로그인 상태가 아니면 종료
-    if not element['logged_in']:
+    if not user_id:
       return jsonify({'msg': '로그인 상태가 아닙니다.'})
+    
     # 세션과 아이디가 같은 회원의 idol을 반환 //좋아하는 선수 이미지 저장
-    target = db.user.find_one({'id': element['id']}, {'_id': 0})
-    img = target['idol']
-    return jsonify({'msg' : 'success', 'img' : img})
+    # DB에서 해당 ID를 가진 유저 조회
+    user = db.user.find_one({'id': user_id}, {'_id': 0})
+    if not user:
+        return jsonify({'msg': '해당 유저가 존재하지 않습니다.'})
+    # idol 필드가 있는지 확인
+    if 'idol' not in user:
+        return jsonify({'msg': '프로필 이미지가 없습니다.'})
+    # 정상 반환
+    return jsonify({'msg': 'success', 'img': user['idol']})
 
 # 메인 페이지 주소
 @app.route('/')
