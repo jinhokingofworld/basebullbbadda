@@ -26,6 +26,12 @@
 
             <!-- 즐겨찾기 -->
             <h2>즐겨찾기</h2>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="즐겨찾기할 기사의 URL을 입력하세요" id="inputURL">
+                <div class="input-group-append">
+                    <button class="btn btn-secondary" type="button" id="button-addon2" onclick="takeURL()">기사 등록</button>
+                </div>
+            </div>
             <div class="all">
                 <div class="list-group"
                     style="width: 100%; max-height: 300px; overflow: scroll; display: inline-block; ">
@@ -120,10 +126,27 @@
                     };
 
                     //좋아하는 기사 로딩
+                    
                 }
             });
         });
 
+        //좋아하는 기사 로딩 inputURL
+        function pickMyTeam() {
+            let input = $('#pickTeam').val();
+            $.ajax({
+                type: "POST",
+                url: "/user/api/idol",
+                data: {'idol' : input},
+                success: function(response){
+                    alert(response['msg'])
+                },
+                error: function() {
+                    alert('에러가 발생했습니다.');
+                }
+            });
+        }
+        
         //좋아하는 팀 등록
         function pickMyTeam() {
             let input = $('#pickTeam').val();
