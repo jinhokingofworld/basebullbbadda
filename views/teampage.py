@@ -330,8 +330,9 @@ def team_detail(teamName):
     return render_template("teampage.html",team=team_data, nickname = session.get('nickname','익명'))
 
 
-
-
+# def scrapOne(pId):
+    
+#     URL = f'https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId={pId}';
 
 
 
@@ -339,19 +340,22 @@ def team_detail(teamName):
 @team_page.route('/<teamName>/playerId=<pId>')
 def player_detail(teamName, pId):
 
-    #해당 선수 정보 DB에서 가져오기    
-    pData = db.player_db[teamName].find_one({'playerId' : pId}, {'_id' : 0})
+    #컬렉션 이름 가져오기
+    collection_name = player_db[teamName]
+    #컬렉션 접근
+    collection = db[collection_name]
+    # DB에서 데이터 불러오기
+    target = collection.find_one({'playerId' : pId}, {'_id' : 0})
 
     #시간 확인
-    now = time.time()
-    lastUpdatedTime = float(pData['lastUpdatedTime'])
+    # now = time.time()
+    # lastUpdatedTime = float(target['lastUpdatedTime'])
 
-    #하루마다 선수 데이터 동적으로 가져와서 저장
-    if now - lastUpdatedTime >= 3600 * 12:
-        #선수 데이터 가져오는 함수
-        return
-    else:
-        #해당 선수 정보 DB에서 가져오기
-        pData = db.player_db[teamName].find_one({'playerId' : pId}, {'_id' : 0})
+    # #하루마다 선수 데이터 동적으로 가져와서 저장
+    # if now - lastUpdatedTime >= 3600 * 24:
+    #     scrapOne(pId)
+    # else:
+    #해당 선수 정보 DB에서 가져오기
+    pData = collection.find_one({'playerId' : pId}, {'_id' : 0})
 
     return render_template("player.html",player=pData, nickname = session.get('nickname','익명'))
