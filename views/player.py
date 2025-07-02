@@ -484,159 +484,24 @@ def ssg_image_list():
 # hanhwa_id_list()
 # player_list()
 # hanhwa_image_list()
-# #기아타이거즈 정보 따오기
-# def kia_player():
-#     uri="https://tigers.co.kr/players/entry-status"
-#     driver.get(uri)
-#     time.sleep(1)
-
-#     soup=BeautifulSoup(driver.page_source,'html.parser')
-#     rows=soup.select('tbody>tr')
-#     kia_list=[]
-#     for row in rows:
-#         ths=row.find_all("th")
-#         name=ths[1].get_text(strip=True)
-
-#         tds=row.find_all("td")
-#         if len(tds)<6:
-#             continue
-#         position=tds[0].get_text(strip=True)
-#         number=tds[1].get_text(strip=True)
-#         toota=tds[2].get_text(strip=True)
-#         birth=tds[3].get_text(strip=True)
-#         height=tds[4].get_text(strip=True)
-#         weight=tds[5].get_text(strip=True)
-
-#         player_dict={
-#             "name":name,
-#             "position":position,
-#             "number":number,
-#             "toota":toota,
-#             "birth": birth,
-#             "height": height,
-#             "weight": weight
-#         }
-#         kia_list.append(player_dict)
-#     return kia_list
-
-# # teams_col1.insert_one({"kia_player":kia_player()})
-
-# #롯데 자이언츠 정보 따오기
-
-# #LG 트윈스 정보 따오기
-# # def lg_player():
-# #     uri="https://www.lgtwins.com/service/html.ncd?view=%2Fpc_twins%2Ftwins_player%2Ftwins_rosters&baRq=IN_DS&IN_DS.YEAR=&baRs=OUT_DS1%2COUT_DS2&actID=BR_RetrievePlayerRosters"
-# #     options.add_argument("--disable-gpu")
-# #     driver = webdriver.Chrome(options=options)
-# #     driver.get(uri)
-# #     time.sleep(1)
-
-# #     soup=BeautifulSoup(driver.page_source,'html.parser')
-# #     driver.quit()
-
-# #     rows=soup.select('.tab_content>.board_dic')
-# #     lg_list=[]
-# #     for row in rows:
-# #         image=soup.select_one('.header>.img_wrap img')
-# #         image_url = image['src']if image and image.has_attr('src')else ""
-# #         name=soup.select_one('.header .title h3')
-# #         name_id=name.get_text(strip=True) if name else""
-# #         ps=row.find_all("p")
-# #         if len(ps)<5:
-# #             continue
-# #         toota=ps[1].get_text(strip=True)
-# #         birth=ps[2].get_text(strip=True)
-# #         heightWeight=ps[3].get_text(strip=True)
-
-# #         player_dict={
-# #             "name":name_id,
-# #             "image":image_url,
-# #             "toota":toota,
-# #             "birth":birth,
-# #             "heightWeight":heightWeight
-# #         }
-# #         lg_list.append(player_dict)
-# #     return lg_list
-
-# # print(lg_player())
-
-# #두산 베어스 정보 따오기
-# #삼성
-# #kt
-
-# #한화 이글스 정보 따오기
-# def hanhwa_player():
-#     url = "https://www.koreabaseball.com/Player/Register.aspx"
-#     driver.get(url)
-#     time.sleep(1)
-
-#     soup = BeautifulSoup(driver.page_source, 'html.parser')
-#     players = soup.select('.row > table > tbody > tr')
-
-#     hanhwa_list = []
-#     for player in players:
-#         tds = player.find_all("td")
-#         if len(tds) < 5:
-#             continue
-
-#         number = tds[0].get_text(strip=True)
-#         name = tds[1].get_text(strip=True)
-#         toota = tds[2].get_text(strip=True)
-#         birth = tds[3].get_text(strip=True)
-#         spec = tds[4].get_text(strip=True)
-
-#         player_dict = {
-#             "number": number,
-#             "name": name,
-#             "toota": toota,
-#             "birth": birth,
-#             "spec": spec
-#         }
-#         hanhwa_list.append(player_dict)
-#     return hanhwa_list
-
-# teams_col7.insert_one({"hanhwa_player":hanhwa_player()})
-
-#############################################################################
-
-# 페이지 열기
-# url = "https://www.koreabaseball.com/Player/Register.aspx"
-# driver.get(url)
-# print("페이지 접속 완료")
-# time.sleep(2)
-
-# # 팀 ID와 팀 이름 리스트
-# team_ids = ['HH', 'LG', 'LT', 'OB', 'WO', 'SS', 'SK', 'NC', 'KT', 'HT']
-# team_names = ['한화', 'LG', '롯데', '두산', '키움', '삼성', 'SSG', 'NC', 'KT', 'KIA']
-
-# # 팀별 반복
-# for tid, tname in zip(team_ids, team_names):
-#     print(f"\n===== {tname} =====")
-#     try:
-#         # 팀 버튼 클릭
-#         team_btn = driver.find_element(By.XPATH, f'//li[@data-id="{tid}"]/a')
-#         team_btn.click()
-#         print(f"{tname} 클릭 완료")
-#         time.sleep(2)
-
-#         # HTML 파싱
-#         soup = BeautifulSoup(driver.page_source, 'html.parser')
-#         rows = soup.select('[class^="tNData"] tbody tr')
-#         print(f"{tname} 선수 수: {len(rows)}명")
-
-#         # 선수 정보 출력
-#         for row in rows:
-#             cols = row.select('td')
-#             if len(cols) >= 5:
-#                 number = cols[0].text.strip()
-#                 name = cols[1].text.strip()
-#                 toota = cols[2].text.strip()
-#                 birth = cols[3].text.strip()
-#                 spec = cols[4].text.strip()
-#                 print(f"{number} {name} {toota} {birth} {spec}")
-#     except Exception as e:
-#         print(f"{tname} 처리 중 오류 발생: {e}")
-
+# dosan_id_list()
+# dosan_image_list()
+# kia_id_list()
+# kia_image_list()
+# kiwoom_id_list()
+# kiwoom_image_list()
+# kt_id_list()
+# kt_image_list()
+# lg_id_list()
+# lg_image_list()
+# lotte_id_list()
+# lotte_image_list()
+# nc_id_list()
+# nc_image_list()
+# samsung_id_list()
+# samsung_image_list()
+# ssg_id_list()
+# ssg_image_list()
 
     # 선수별 영상 추출 작업 시작
 def get_player_clips(player_name):
@@ -688,14 +553,14 @@ def get_player_clips(player_name):
 
 videos = get_player_clips("김도영")
 print(videos)
-for i, v in enumerate(videos, start=1):
-    print(f"[{i}] 제목: {v['title']}")
-    print(f"    🎬 Watch: {v['watch_link']}")
-    print(f"    📺 Embed: {v['embed_link']}")
-    print(f"    🖼️ 썸네일: {v['thumbnail']}")
-    print(f"    📅 날짜: {v['date']}")
-    print(f"    👁️ 조회수: {v['views']}")
-    print("-" * 80)
+# for i, v in enumerate(videos, start=1):
+#     print(f"[{i}] 제목: {v['title']}")
+#     print(f"    🎬 Watch: {v['watch_link']}")
+#     print(f"    📺 Embed: {v['embed_link']}")
+#     print(f"    🖼️ 썸네일: {v['thumbnail']}")
+#     print(f"    📅 날짜: {v['date']}")
+#     print(f"    👁️ 조회수: {v['views']}")
+#     print("-" * 80)
 
 # 브라우저 종료
 driver.quit()
