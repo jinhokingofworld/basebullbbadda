@@ -185,21 +185,19 @@
 
             <!--명완 커뮤니티 기능 -->
 
-        </div>
-
-        <!-- <div class="로그인시 보이는 클래스 삽입 "> </div> -->
-        <div class="schedule-box" id="schedule-box">경기 일정</div>
-
-        <div class="community-box" id="community">
-            <!-- <img src = "프로필사진">댓글 프로필이 들어갈 부분></img>
-             <p class="아이디"> 댓글아이디가 들어갈 부분 </p> -->
-            <p><span class="date"> 날짜가 들어갈 부분</span></p>
-            <p><textarea class="comment-box" id="comment_content" placeholder="댓글을 입력하세요."></textarea></p>
-            <button onclick="postComment()" class=" btn btn-primary btnComment" id="comment_button"
-                data-team_id="{{team_id}}" type="button">등록</button>
-        </div>
-        <!-- <hr>
-        <p class = "comment_commentText" id="commentText"></p> -->
+        <!-- 댓글상자 들어갈 곳"> </iv> -->
+        <div class = "container">
+        <div class="card border-primary mb-3" style="width: auto;">
+            <div class = card-header><strong><span class="comment-nickname" id="comment_nickname">{{nickname}}</span></strong></div>
+            <p><textarea class="card-body text-secondary" style="width: 100%; height: 6.25em; border: none; resize: none;" id="comment_content" placeholder="댓글을 입력하세요."></textarea></p>
+            <div>
+                <button onclick="postComment()" style="width: 100px; float:inline-end;" class=" btn btn-primary btnComment" id="comment_button"
+                    data-player_id="{{pId}}" type="button">등록</button>
+            </div>
+                <div class="list-group"  style="width: 100%; max-height: 300px; overflow-y: scroll; display: inline-block; ">
+                <div class="comment-list text-muted" id="list_content"></div>
+                   <!-- 댓글 리스트가 들어갈 곳 -->
+            </div> 
 
     </div>
 
@@ -209,8 +207,8 @@
             let dataComment = $('#comment_content').val().trim();
             // console.log(dataComment);
             // let temp_html = `<textarea> ${dataComment}</textarea>`;
-            let team_id = $('#comment_button').data('team_id');
-            console.log("팀 아이디:", team_id);
+            let player_id = $('#comment_button').data('pId');
+            console.log("플레이어 아이디:", player_id);
             if (dataComment == "") {
                 alert("내용이 없습니다.");
                 return;
@@ -228,12 +226,12 @@
                         // 댓글 작성 api 요청하는 부분
                         $.ajax({
                             type: 'POST',
-                            url: `/${team_id}/comment`,
+                            url: `/${pId}/comment`,
                             data: { 'comment': dataComment },
                             success: function (response) {
                                 if (response['result'] == 'success') {
                                     alert(response['msg'])
-                                    // 팀페이지로 리디렉션 (제자리 리디렉션)
+                                    // 선수페이지로 리디렉션 (제자리 리디렉션)
                                     window.location.href = response['url'];
                                 }
                                 else {
@@ -254,6 +252,15 @@
 
 
     </script>
+
+    <script>
+        // <!-- 새로고침시 댓글함수 호출 (댓글유지) -->
+        $(document).ready(function() {
+            load_comments();
+        });
+
+    </script>
+
 
 
 </body>
