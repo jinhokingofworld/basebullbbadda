@@ -134,9 +134,9 @@ player_db = {
     "SAMSUNG_LIONS": "samsung_player",
     "KT_WIZ": "kt_player",
     "KIWOOM_HEROS": "kiwoom_player",
-    "NC_DIONS": "nc_player",
+    "NC_DINOS": "nc_player",
     "SSG_LANDERS": "ssg_player",
-    "HANWHA_EAGLES" : "hanwha_player"
+    "HANWHA_EAGLES" : "hanhwa_player"
 }
 
 #팀별 선수 DB객체 출력
