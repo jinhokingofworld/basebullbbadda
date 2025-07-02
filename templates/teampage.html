@@ -149,9 +149,10 @@
         <div class = "container">
         <div class="card border-primary mb-3" style="width: auto;">
             <div class = card-header><strong><span class="comment-nickname" id="comment_nickname">{{nickname}}</span></strong></div>
-            <p>{{team_id}}<textarea class="card-body text-secondary" style="width: 100%; height: 6.25em; border: none; resize: none;" id="comment_content" placeholder="댓글을 입력하세요."></textarea></p>
+            <p><textarea class="card-body text-secondary" style="width: 100%; height: 6.25em; border: none; resize: none;" id="comment_content" placeholder="댓글을 입력하세요."></textarea></p>
             <div>
-                <button onclick="postComment()" style="width: 100px; float:inline-end;" class=" btn btn-primary btnComment" id="data-team_id" type="button">등록</button>
+                <button onclick="postComment()" style="width: 100px; float:inline-end;" class=" btn btn-primary btnComment" id="comment_button"
+                    >등록</button>
             </div>
                 <div class="list-group"  style="width: 100%; max-height: 300px; overflow-y: scroll; display: inline-block; ">
                 <div class="comment-list text-muted" id="list_content"></div>
@@ -165,15 +166,31 @@
     </div>
 
     <script>
+        
+        team_id = {
+            "KIA 타이거즈" : "KIA_TIGERS",
+            "롯데 자이언츠" : "LOTTE_GIANTS",
+            "LG 트윈스" : "LG_TWINS",
+            "두산 베어스" : "DOOSAN_BEARS",
+            "삼성 라이온즈" : "SAMSUNG_LIONS",
+            "KT 위즈" : "KT_WIZ",
+            "키움 히어로즈" : "KIWOOM_HEROS",
+            "NC 다이노스" : "NC_DIONS",
+            "SSG 랜더스" : "SSG_LANDERS",
+            "한화 이글스" : "HANWHA_EAGLES"
+        }
+
+
         // 댓글 등록 함수
         function postComment() {
 
             // textarea내 내용 추출
             let dataComment = $('#comment_content').val().trim();
-            let team_id = "{{team['team_name']}}"
-           
+            let kor_na = "{{team['team_name']}}"
+            let eng_na = team_id[kor_na]
+            
 
-            let encoded_team_id = encodeURIComponent(team_id);
+            // let encoded_team_id = encodeURIComponent(team_id);
             //로그인 세션 api 요청하는 부분
             $.ajax({
                 type: 'GET',
@@ -186,14 +203,14 @@
                         // 댓글 등록 api 요청하는 부분
                         $.ajax({
                             type: 'POST',
-                            url: `/team/${encoded_team_id}/comment`,
+                            url: `/team/${eng_na}/comment`,
                             data: { 'comment': dataComment },
                             success: function (response) {
                                 if (response['result'] == 'success') {
                                     alert(response['msg'])
                                     load_comments();
-                                    // // 팀페이지로 리디렉션 (제자리 리디렉션)
-                                    // window.location.href = response['url'];
+                                    // 팀페이지로 리디렉션 (제자리 리디렉션)
+                                    window.location.href = response['url'];
                                 }
                                 else {
                                     alert(response['msg'])
@@ -213,17 +230,17 @@
 
         // 댓글 호출 함수
         function load_comments() {
-            let team_id = "{{team['team_name']}}";
 
-            // url 인코딩
-            let encoded_team_id = encodeURIComponent(team_id);
-            
+            let kor_team_id = "{{team['team_name']}}";
+
+            // 한글 -> 영어로
+            eng_team_id = team_id[kor_team_id]
            
 
             //DB에서 팀별 댓글 추출 API 요청하는 부분
             $.ajax({
                 type: 'GET',
-                url: `/team/${encoded_team_id}/comment`,
+                url: `/team/${eng_team_id}/comment`,
                 data: {},
                 success: function(response) {
                     if(response['result'] == 'success') {

@@ -566,14 +566,16 @@ def get_player_clips(player_name):
 def player_clip_list(team_name_input): # ** player_clip_list 함수의 매개변수는 반드시 team_name의 문자열과 동일해야함**
 
 
+    ########## 
     # 전역변수 collections, team_name 사용 
-   
+    #
     # collections=[
     # db.kia_player, db.lotte_player, db.lg_player, db.dosan_player, db.samsung_player,
     # db.kt_player, db.hanhwa_player, db.kiwoom_player, db.nc_player, db.ssg_player]
-    
-    #  team_name=['KIA','롯데','LG','두산','삼성','KT','한화','키움','NC','SSG']
-    
+    #
+    # team_name=['KIA','롯데','LG','두산','삼성','KT','한화','키움','NC','SSG']
+    ###########
+
     #팀의 컬렉션 위치 찾기
     idx = team_name.index(team_name_input)
     
@@ -637,8 +639,17 @@ def post_comment(pId):
     target_user = session.get('id')
     target_nickname = session.get('nickname')
 
-    
-        #팀의 컬렉션 위치 찾기
+    ######### 
+    # 전역변수 collections, team_name 사용 
+    #
+    # collections=[
+    # db.kia_player, db.lotte_player, db.lg_player, db.dosan_player, db.samsung_player,
+    # db.kt_player, db.hanhwa_player, db.kiwoom_player, db.nc_player, db.ssg_player]
+    #
+    # team_name=['KIA','롯데','LG','두산','삼성','KT','한화','키움','NC','SSG']
+    ###########
+
+    #팀의 컬렉션 위치 찾기
     idx = team_name.index(pId)
     # DB에서 해당 선수의 팀 컬렉션 찾기
     team_collection = collections[idx]
