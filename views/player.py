@@ -305,7 +305,6 @@ def hanhwa_image_list():
 #     except Exception as e:
 #         print(f"{tname} 처리 중 오류 발생: {e}")
 
-
     # 선수별 영상 추출 작업 시작
 def get_player_clips(player_name):
         query = f"kbo {player_name}"
@@ -354,16 +353,87 @@ def get_player_clips(player_name):
 
         return video_list
 
-videos = get_player_clips("김도영")
-print(videos)
-for i, v in enumerate(videos, start=1):
-    print(f"[{i}] 제목: {v['title']}")
-    print(f"    🎬 Watch: {v['watch_link']}")
-    print(f"    📺 Embed: {v['embed_link']}")
-    print(f"    🖼️ 썸네일: {v['thumbnail']}")
-    print(f"    📅 날짜: {v['date']}")
-    print(f"    👁️ 조회수: {v['views']}")
-    print("-" * 80)
+# videos = get_player_clips("김도영")
+# print(videos)
+# for i, v in enumerate(videos, start=1):
+#     print(f"[{i}] 제목: {v['title']}")
+#     print(f"    🎬 Watch: {v['watch_link']}")
+#     print(f"    📺 Embed: {v['embed_link']}")
+#     print(f"    🖼️ 썸네일: {v['thumbnail']}")
+#     print(f"    📅 날짜: {v['date']}")
+#     print(f"    👁️ 조회수: {v['views']}")
+#     print("-" * 80)
+
+# 선수별 영상 MongoDB에 저장 
+def player_clip_list(team_name_input):
+
+    #팀의 컬렉션 위치 찾기
+    idx = team_name.index(team_name_input)
+    
+    # DB에서 해당 선수의 팀 컬렉션 찾기
+    team_collection = collections[idx]
+    
+    # 해당 팀의 전체 선수 이름 추출 
+    team_player_name =team_collection.find({}, {"name": 1})
+
+
+    # 전체 선수중 타겟 선수 찾기
+    for player in team_player_name:
+        target_player_name = player.get("name")
+        if not target_player_name:
+            continue
+
+        #영상 스크래핑 함수 호출
+        clips = get_player_clips(target_player_name)
+
+        team_collection.update_one(
+            {"name": target_player_name},
+            {"$set": {"player_clips": clips,
+                       "team_name": team_name_input
+                      }}
+        )
+
+
+
+# # 팀별 반복
+#     for idx, (tid,tname) in enumerate(zip(team_id, team_name)):
+#         try:
+#             # 팀 버튼 클릭
+#             team_btn = driver.find_element(By.XPATH, f'//li[@data-id="{tid}"]/a')
+#             team_btn.click()
+#             time.sleep(2)
+
+#             # HTML 파싱
+#             soup = BeautifulSoup(driver.page_source, 'html.parser')
+#             rows = soup.select('[class^="tNData"] tbody tr')
+
+#             players=[]
+
+#             # 선수 정보 뽑아옴 
+#             now = time.time()
+#             for row in rows:
+#                 cols = row.select('td')
+#                 if len(cols) >= 3:
+#                     player_dict={
+#                         "name": cols[1].text.strip(),     # 이름
+#                         "number": cols[0].text.strip(),   # 번호
+#                         "toota": cols[2].text.strip(),    # 투타
+#                         "birth": cols[3].text.strip(),    # 생년월일
+#                         "spec": cols[4].text.strip(),
+#                         "lastUpdatedTime": now
+#                     }
+#                     players.append(player_dict)
+
+#             # collections[idx].delete_many({})
+#             # collections[idx].insert_many(players)
+
+#         except Exception as e:
+#             print(f"{tname} 처리 중 오류 발생: {e}")
+#     driver.quit()
+
+
+
+
 
 # 브라우저 종료
 driver.quit()
