@@ -1,4 +1,4 @@
-import os
+import os, unicodedata
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"        # TensorFlow 로그 제거
 os.environ["DISABLE_TFLITE_DELEGATE"] = "1" 
 import requests, time
@@ -94,6 +94,45 @@ team_code_id={
     "NC 다이노스": "NC",
     "SSG 랜더스": "SK"
 }
+# URL을 DB로 변경
+team_name = {
+    "KIA_TIGERS": "KIA 타이거즈",
+    "LOTTE_GIANTS": "롯데 자이언츠",
+    "LG_TWINS": "LG 트윈스",
+    "DOOSAN_BEARS": "두산 베어스",
+    "SAMSUNG_LIONS": "삼성 라이온즈",
+    "KT_WIZ": "KT 위즈",
+    "KIWOOM_HEROS": "키움 히어로즈",
+    "NC_DIONS": "NC 다이노스",
+    "SSG_LANDERS": "SSG 랜더스",
+    "HANWHA_EAGLES" : "한화 이글스"
+}
+#DB를 URL로 변경
+team_id = {
+    "KIA 타이거즈" : "KIA_TIGERS",
+    "롯데 자이언츠" : "LOTTE_GIANTS",
+    "LG 트윈스" : "LG_TWINS",
+    "두산 베어스" : "DOOSAN_BEARS",
+    "삼성 라이온즈" : "SAMSUNG_LIONS",
+    "KT 위즈" : "KT_WIZ",
+    "키움 히어로즈" : "KIWOOM_HEROS",
+    "NC 다이노스" : "NC_DIONS",
+    "SSG 랜더스" : "SSG_LANDERS",
+    "한화 이글스" : "HANWHA_EAGLES"
+}
+
+player_db = {
+    "KIA_TIGERS": "kia_player",
+    "LOTTE_GIANTS": "lotte_player",
+    "LG_TWINS": "lg_player",
+    "DOOSAN_BEARS": "dosan_player",
+    "SAMSUNG_LIONS": "samsung_player",
+    "KT_WIZ": "kt_player",
+    "KIWOOM_HEROS": "kiwoom_player",
+    "NC_DIONS": "nc_player",
+    "SSG_LANDERS": "ssg_player",
+    "HANWHA_EAGLES" : "hanwha_player"
+}
 
 headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
 
@@ -132,7 +171,9 @@ def get_kbo_news(team_name):
             }
 
             # 팀이름필터링
-            if team_name.split()[0] in news["title"]:
+            title = unicodedata.normalize('NFKC', news["title"])
+
+            if team_name.split()[0] in title:
                 news_list.append(news)
         if len(news_list)==5:
             break
@@ -229,38 +270,21 @@ def dbcall(teamName):
         "lastUpdatedTime": target['lastUpdatedTime']
     }
 
-#정보 연결 
-@team_page.route('/<teamName>')
-def team_detail(teamName):
-    now = time.time()
-    target=teams_col.find_one()
-    lastUpdatedTime = float(target['lastUpdatedTime'])
-    
-    if now - lastUpdatedTime >=3600:
-        scrapStart(teamName)
-    else: 
-        dbcall(teamName)
-        
-
-    # # lastUpdatedTime = db.teams_col.find_one({})
-
-    #팀 정보 객체 찾아서 리디렉션과 동시에 던져줌
-    team_data=teams_col.find_one({'team_name' : teamName})
-    return render_template("teampage.html",team=team_data, nickname = session.get('nickname','익명'))
 
 #DB에서 팀별 댓글 추출 API 응답하는 부분
-@team_page.route('/<team_id>/comment', methods=['GET'])
-def get_team_comments(team_id):
+@team_page.route('/<eng_team_id>/comment', methods=['GET'])
+def get_team_comments(eng_team_id):
 
+    #영어를 한글로
+    name = team_name[eng_team_id]
     # 댓글 DB중 해당하는 팀의 댓글 추출 후 리스트화
-    comments = list(db.team_comment.find({'team_id': team_id}, {'_id': False}))
+    comments = list(db.team_comment.find({'team_id': name}, {'_id': False}))
     return jsonify({'result': 'success', 'comments': comments})
 
 
 # 댓글 등록 api 응답하는 부분
-@team_page.route('/<team_id>/comment', methods =['POST'])
-def post_comment(team_id):
-   
+@team_page.route('/<teamName>/comment', methods =['POST'])
+def post_comment(teamName):
  
      # 입력받은 Comment 데이터 가져오기
     input_comment = request.form.get('comment','').strip()
@@ -268,16 +292,70 @@ def post_comment(team_id):
     if(input_comment == ''):
         return jsonify({'result': 'fail', 'msg': '내용을 입력하세요.'})
 
-
     #세션된 ID,닉네임 가져오기
     target_user = session.get('id')
     target_nickname = session.get('nickname')
 
+    # 영어를 한글로
+    name = team_name[teamName]
     # DB에 도큐멘트 형태로 변환
     doc = {
-        'team_id': team_id, 'id' : target_user, 'nickname' :target_nickname, 'comment' : input_comment,  'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S') } #좋아요 추가시 user db와 이름혼동문제 
+        'team_id': name, 'id' : target_user, 'nickname' :target_nickname, 'comment' : input_comment,  'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S') } #좋아요 추가시 user db와 이름혼동문제 
     db.team_comment.insert_one(doc)
     # DB에 아이디, 닉네임과 댓글 내용 데이터 저장
     # 댓글 등록 성공 (응답 성공 반환)
-    return jsonify( {'result': 'success','msg' : '댓글 등록 성공!', 'nickname' : target_nickname, 'url' : team_id})
+    return jsonify( {'result': 'success','msg' : '댓글 등록 성공!', 'nickname' : target_nickname, 'url' : f'{teamName}'})
     
+
+#팀 페이지 라우팅 
+@team_page.route('/<teamName>')
+def team_detail(teamName):
+    now = time.time()
+    target=teams_col.find_one()
+    lastUpdatedTime = float(target['lastUpdatedTime'])
+    
+    name = team_name[teamName] #SSG_LANDERS -> SSG 랜더스
+
+    if now - lastUpdatedTime >=3600:
+        scrapStart(name)
+    else: 
+        dbcall(name)
+
+    # # lastUpdatedTime = db.teams_col.find_one({})
+
+    #팀 정보 객체 찾아서 리디렉션과 동시에 던져줌
+    team_data=teams_col.find_one({'team_name' : name}, {'_id' : 0})
+
+
+    return render_template("teampage.html",team=team_data, nickname = session.get('nickname','익명'))
+
+
+# def scrapOne(pId):
+    
+#     URL = f'https://www.koreabaseball.com/Record/Retire/Hitter.aspx?playerId={pId}';
+
+
+
+#팀 / 선수 세부 페이지 라우팅
+@team_page.route('/<teamName>/playerId=<pId>')
+def player_detail(teamName, pId):
+
+    #컬렉션 이름 가져오기
+    collection_name = player_db[teamName]
+    #컬렉션 접근
+    collection = db[collection_name]
+    # DB에서 데이터 불러오기
+    target = collection.find_one({'playerId' : pId}, {'_id' : 0})
+
+    #시간 확인
+    # now = time.time()
+    # lastUpdatedTime = float(target['lastUpdatedTime'])
+
+    # #하루마다 선수 데이터 동적으로 가져와서 저장
+    # if now - lastUpdatedTime >= 3600 * 24:
+    #     scrapOne(pId)
+    # else:
+    #해당 선수 정보 DB에서 가져오기
+    pData = collection.find_one({'playerId' : pId}, {'_id' : 0})
+
+    return render_template("player.html",player=pData, nickname = session.get('nickname','익명'))
