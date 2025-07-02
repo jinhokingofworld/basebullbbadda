@@ -1,4 +1,4 @@
-import os
+import os, unicodedata
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"        # TensorFlow 로그 제거
 os.environ["DISABLE_TFLITE_DELEGATE"] = "1" 
 import requests, time
@@ -95,6 +95,32 @@ team_code_id={
     "SSG 랜더스": "SK"
 }
 
+team_name = {
+    "KIA_TIGERS": "KIA 타이거즈",
+    "LOTTE_GIANTS": "롯데 자이언츠",
+    "LG_TWINS": "LG 트윈스",
+    "DOOSAN_BEARS": "두산 베어스",
+    "SAMSUNG_LIONS": "삼성 라이온즈",
+    "KT_WIZ": "KT 위즈",
+    "KIWOOM_HEROS": "키움 히어로즈",
+    "NC_DIONS": "NC 다이노스",
+    "SSG_LANDERS": "SSG 랜더스",
+    "HANWHA_EAGLES" : "한화 이글스"
+}
+
+team_id = {
+    "KIA 타이거즈" : "KIA_TIGERS",
+    "롯데 자이언츠" : "LOTTE_GIANTS",
+    "LG 트윈스" : "LG_TWINS",
+    "두산 베어스" : "DOOSAN_BEARS",
+    "삼성 라이온즈" : "SAMSUNG_LIONS",
+    "KT 위즈" : "KT_WIZ",
+    "키움 히어로즈" : "KIWOOM_HEROS",
+    "NC 다이노스" : "NC_DIONS",
+    "SSG 랜더스" : "SSG_LANDERS",
+    "한화 이글스" : "HANWHA_EAGLES"
+}
+
 headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
 
 #팀 뉴스기사 가져오기 
@@ -132,7 +158,9 @@ def get_kbo_news(team_name):
             }
 
             # 팀이름필터링
-            if team_name.split()[0] in news["title"]:
+            title = unicodedata.normalize('NFKC', news["title"])
+
+            if team_name.split()[0] in title:
                 news_list.append(news)
         if len(news_list)==5:
             break
@@ -229,23 +257,25 @@ def dbcall(teamName):
         "lastUpdatedTime": target['lastUpdatedTime']
     }
 
-#정보 연결 
+#팀 페이지 라우팅 
 @team_page.route('/<teamName>')
 def team_detail(teamName):
     now = time.time()
     target=teams_col.find_one()
     lastUpdatedTime = float(target['lastUpdatedTime'])
     
+    name = team_name[teamName] #SSG_LANDERS -> SSG 랜더스
+
     if now - lastUpdatedTime >=3600:
-        scrapStart(teamName)
+        scrapStart(name)
     else: 
-        dbcall(teamName)
+        dbcall(name)
         
 
     # # lastUpdatedTime = db.teams_col.find_one({})
 
     #팀 정보 객체 찾아서 리디렉션과 동시에 던져줌
-    team_data=teams_col.find_one({'team_name' : teamName})
+    team_data=teams_col.find_one({'team_name' : name})
     return render_template("teampage.html",team=team_data, nickname = session.get('nickname','익명'))
 
 #DB에서 팀별 댓글 추출 API 응답하는 부분
@@ -260,7 +290,6 @@ def get_team_comments(team_id):
 # 댓글 등록 api 응답하는 부분
 @team_page.route('/<team_id>/comment', methods =['POST'])
 def post_comment(team_id):
-   
  
      # 입력받은 Comment 데이터 가져오기
     input_comment = request.form.get('comment','').strip()
@@ -268,6 +297,7 @@ def post_comment(team_id):
     if(input_comment == ''):
         return jsonify({'result': 'fail', 'msg': '내용을 입력하세요.'})
 
+    name = team_id[team_id]
 
     #세션된 ID,닉네임 가져오기
     target_user = session.get('id')
@@ -279,5 +309,5 @@ def post_comment(team_id):
     db.team_comment.insert_one(doc)
     # DB에 아이디, 닉네임과 댓글 내용 데이터 저장
     # 댓글 등록 성공 (응답 성공 반환)
-    return jsonify( {'result': 'success','msg' : '댓글 등록 성공!', 'nickname' : target_nickname, 'url' : team_id})
+    return jsonify( {'result': 'success','msg' : '댓글 등록 성공!', 'nickname' : target_nickname, 'url' : name})
     

@@ -149,10 +149,9 @@
         <div class = "container">
         <div class="card border-primary mb-3" style="width: auto;">
             <div class = card-header><strong><span class="comment-nickname" id="comment_nickname">{{nickname}}</span></strong></div>
-            <p><textarea class="card-body text-secondary" style="width: 100%; height: 6.25em; border: none; resize: none;" id="comment_content" placeholder="댓글을 입력하세요."></textarea></p>
+            <p>{{team_id}}<textarea class="card-body text-secondary" style="width: 100%; height: 6.25em; border: none; resize: none;" id="comment_content" placeholder="댓글을 입력하세요."></textarea></p>
             <div>
-                <button onclick="postComment()" style="width: 100px; float:inline-end;" class=" btn btn-primary btnComment" id="comment_button"
-                    data-team_id="{{team_id}}" type="button">등록</button>
+                <button onclick="postComment()" style="width: 100px; float:inline-end;" class=" btn btn-primary btnComment" id="data-team_id" type="button">등록</button>
             </div>
                 <div class="list-group"  style="width: 100%; max-height: 300px; overflow-y: scroll; display: inline-block; ">
                 <div class="comment-list text-muted" id="list_content"></div>
