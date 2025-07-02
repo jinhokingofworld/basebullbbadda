@@ -159,42 +159,102 @@ headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/53
 #############################################################################
 
 # 페이지 열기
-url = "https://www.koreabaseball.com/Player/Register.aspx"
-driver.get(url)
-print("페이지 접속 완료")
-time.sleep(2)
+# url = "https://www.koreabaseball.com/Player/Register.aspx"
+# driver.get(url)
+# print("페이지 접속 완료")
+# time.sleep(2)
 
-# 팀 ID와 팀 이름 리스트
-team_ids = ['HH', 'LG', 'LT', 'OB', 'WO', 'SS', 'SK', 'NC', 'KT', 'HT']
-team_names = ['한화', 'LG', '롯데', '두산', '키움', '삼성', 'SSG', 'NC', 'KT', 'KIA']
+# # 팀 ID와 팀 이름 리스트
+# team_ids = ['HH', 'LG', 'LT', 'OB', 'WO', 'SS', 'SK', 'NC', 'KT', 'HT']
+# team_names = ['한화', 'LG', '롯데', '두산', '키움', '삼성', 'SSG', 'NC', 'KT', 'KIA']
 
-# 팀별 반복
-for tid, tname in zip(team_ids, team_names):
-    print(f"\n===== {tname} =====")
-    try:
-        # 팀 버튼 클릭
-        team_btn = driver.find_element(By.XPATH, f'//li[@data-id="{tid}"]/a')
-        team_btn.click()
-        print(f"{tname} 클릭 완료")
-        time.sleep(2)
+# # 팀별 반복
+# for tid, tname in zip(team_ids, team_names):
+#     print(f"\n===== {tname} =====")
+#     try:
+#         # 팀 버튼 클릭
+#         team_btn = driver.find_element(By.XPATH, f'//li[@data-id="{tid}"]/a')
+#         team_btn.click()
+#         print(f"{tname} 클릭 완료")
+#         time.sleep(2)
 
-        # HTML 파싱
+#         # HTML 파싱
+#         soup = BeautifulSoup(driver.page_source, 'html.parser')
+#         rows = soup.select('[class^="tNData"] tbody tr')
+#         print(f"{tname} 선수 수: {len(rows)}명")
+
+#         # 선수 정보 출력
+#         for row in rows:
+#             cols = row.select('td')
+#             if len(cols) >= 5:
+#                 number = cols[0].text.strip()
+#                 name = cols[1].text.strip()
+#                 toota = cols[2].text.strip()
+#                 birth = cols[3].text.strip()
+#                 spec = cols[4].text.strip()
+#                 print(f"{number} {name} {toota} {birth} {spec}")
+#     except Exception as e:
+#         print(f"{tname} 처리 중 오류 발생: {e}")
+
+
+    # 선수별 영상 추출 작업 시작
+def get_player_clips(player_name):
+        query = f"kbo {player_name}"
+        # url = f"https://search.naver.com/search.naver?query={query}&where=video"
+        url = f"https://search.naver.com/search.naver?where=video&sort=date&view=big&query={query}&playtime=&period=&dtype=&ptype=&selected_cp=&sm=mtb_opt&ie=utf8&nso=so:dd,p:all&x_video="
+        driver.get(url)
+        time.sleep(2)  # 페이지 로딩 대기
+
         soup = BeautifulSoup(driver.page_source, 'html.parser')
-        rows = soup.select('[class^="tNData"] tbody tr')
-        print(f"{tname} 선수 수: {len(rows)}명")
+        items = soup.select(".list_wrap")
 
-        # 선수 정보 출력
-        for row in rows:
-            cols = row.select('td')
-            if len(cols) >= 5:
-                number = cols[0].text.strip()
-                name = cols[1].text.strip()
-                toota = cols[2].text.strip()
-                birth = cols[3].text.strip()
-                spec = cols[4].text.strip()
-                print(f"{number} {name} {toota} {birth} {spec}")
-    except Exception as e:
-        print(f"{tname} 처리 중 오류 발생: {e}")
+        # print(items)
+
+        video_list = []
+        for item in items[:5]:
+            title_tag = item.select_one('.info_area .info_title')
+            
+            link_tag = item.select_one('.thumb_area a')
+            
+            thumb_tag = item.select_one('.thumb_area img')
+            
+            meta_spans = item.select('.desc_group span.desc')
+            # print(meta_spans)
+            # print(title_tag,link_tag,thumb_tag,meta_spans)
+
+            if not (title_tag and link_tag and thumb_tag and len(meta_spans) >= 2):
+                continue
+
+            link = link_tag['href']
+            if "youtube.com" in link and "v=" in link:
+                video_id = link.split("v=")[-1].split("&")[0]
+                embed_link = f"https://www.youtube.com/embed/{video_id}"
+                watch_link = link
+            else:
+                continue
+
+            video = {
+                "title": title_tag.get_text(strip=True),
+                "embed_link": embed_link,
+                "watch_link": watch_link,
+                "thumbnail": thumb_tag['src'],
+                "date": meta_spans[0].get_text(strip=True),
+                "views": meta_spans[1].get_text(strip=True)
+            }
+            video_list.append(video)
+
+        return video_list
+
+videos = get_player_clips("김도영")
+print(videos)
+for i, v in enumerate(videos, start=1):
+    print(f"[{i}] 제목: {v['title']}")
+    print(f"    🎬 Watch: {v['watch_link']}")
+    print(f"    📺 Embed: {v['embed_link']}")
+    print(f"    🖼️ 썸네일: {v['thumbnail']}")
+    print(f"    📅 날짜: {v['date']}")
+    print(f"    👁️ 조회수: {v['views']}")
+    print("-" * 80)
 
 # 브라우저 종료
 driver.quit()
