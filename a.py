@@ -40,6 +40,8 @@ for i in range(0, 120, 12):
         entry = dict(zip(columns, chunk))
         resultList.append(entry)
 
+db.ranking.drop()
+
 #DB에 저장
 db.ranking.insert_one(doc)
 
