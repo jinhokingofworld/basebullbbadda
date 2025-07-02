@@ -121,6 +121,19 @@ team_id = {
     "한화 이글스" : "HANWHA_EAGLES"
 }
 
+player_db = {
+    "KIA_TIGERS": "kia_player",
+    "LOTTE_GIANTS": "lotte_player",
+    "LG_TWINS": "lg_player",
+    "DOOSAN_BEARS": "dosan_player",
+    "SAMSUNG_LIONS": "samsung_player",
+    "KT_WIZ": "kt_player",
+    "KIWOOM_HEROS": "kiwoom_player",
+    "NC_DIONS": "nc_player",
+    "SSG_LANDERS": "ssg_player",
+    "HANWHA_EAGLES" : "hanwha_player"
+}
+
 headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
 
 #팀 뉴스기사 가져오기 
@@ -257,26 +270,6 @@ def dbcall(teamName):
         "lastUpdatedTime": target['lastUpdatedTime']
     }
 
-#팀 페이지 라우팅 
-@team_page.route('/<teamName>')
-def team_detail(teamName):
-    now = time.time()
-    target=teams_col.find_one()
-    lastUpdatedTime = float(target['lastUpdatedTime'])
-    
-    name = team_name[teamName] #SSG_LANDERS -> SSG 랜더스
-
-    if now - lastUpdatedTime >=3600:
-        scrapStart(name)
-    else: 
-        dbcall(name)
-        
-
-    # # lastUpdatedTime = db.teams_col.find_one({})
-
-    #팀 정보 객체 찾아서 리디렉션과 동시에 던져줌
-    team_data=teams_col.find_one({'team_name' : name})
-    return render_template("teampage.html",team=team_data, nickname = session.get('nickname','익명'))
 
 #DB에서 팀별 댓글 추출 API 응답하는 부분
 @team_page.route('/<team_id>/comment', methods=['GET'])
@@ -311,3 +304,50 @@ def post_comment(team_id):
     # 댓글 등록 성공 (응답 성공 반환)
     return jsonify( {'result': 'success','msg' : '댓글 등록 성공!', 'nickname' : target_nickname, 'url' : name})
     
+
+#팀 페이지 라우팅 
+@team_page.route('/<teamName>')
+def team_detail(teamName):
+    now = time.time()
+    target=teams_col.find_one()
+    lastUpdatedTime = float(target['lastUpdatedTime'])
+    
+    name = team_name[teamName] #SSG_LANDERS -> SSG 랜더스
+
+    if now - lastUpdatedTime >=3600:
+        scrapStart(name)
+    else: 
+        dbcall(name)
+
+    # # lastUpdatedTime = db.teams_col.find_one({})
+
+    #팀 정보 객체 찾아서 리디렉션과 동시에 던져줌
+    team_data=teams_col.find_one({'team_name' : name})
+    return render_template("teampage.html",team=team_data, nickname = session.get('nickname','익명'))
+
+
+
+
+
+
+
+#팀 / 선수 세부 페이지 라우팅
+@team_page.route('/<teamName>/playerId=<playerId>')
+def player_detail(teamName, playerId):
+
+    #해당 선수 정보 DB에서 가져오기    
+    pData = db.player_db[teamName].find_one({'playerId' : playerId}, {'_id' , 0})
+
+    #시간 확인
+    now = time.time()
+    lastUpdatedTime = float(pData['lastUpdatedTime'])
+
+    #하루마다 선수 데이터 동적으로 가져와서 저장
+    if now - lastUpdatedTime >= 3600 * 12:
+        #선수 데이터 가져오는 함수
+        return
+    else:
+        #해당 선수 정보 DB에서 가져오기
+        pData = db.player_db[teamName].find_one({'playerId' : playerId}, {'_id' , 0})
+
+    return render_template("teampage.html",player=pData, nickname = session.get('nickname','익명'))

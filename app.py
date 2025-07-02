@@ -105,27 +105,62 @@ def home():
 
 teams_col = db.teams  # 이거 꼭 있어야 함
 
-#팀별 페이지로 라우팅
-@app.route('/team/<team_id>')
-def team_detail(team_id):
-    team_name_map = {
-        "Tigers": "KIA 타이거즈",
-        "Giants": "롯데 자이언츠",
-        "Twins": "LG 트윈스",
-        "Bears": "두산 베어스",
-        "Lions": "삼성 라이온즈",
-        "Wiz": "KT 위즈",
-        "Eagles": "한화 이글스",
-        "Heros": "키움 히어로즈",
-        "Dinos": "NC 다이노스",
-        "Landers": "SSG 랜더스"
-    }
+# #팀별 페이지로 라우팅
+# @app.route('/team/<team_id>')
+# def team_detail(team_id):
+#     team_name_map = {
+#         "Tigers": "KIA 타이거즈",
+#         "Giants": "롯데 자이언츠",
+#         "Twins": "LG 트윈스",
+#         "Bears": "두산 베어스",
+#         "Lions": "삼성 라이온즈",
+#         "Wiz": "KT 위즈",
+#         "Eagles": "한화 이글스",
+#         "Heros": "키움 히어로즈",
+#         "Dinos": "NC 다이노스",
+#         "Landers": "SSG 랜더스"
+#     }
 
-    team_name = team_name_map.get(team_id)
-    team_data = teams_col.find_one({"team_name": team_name})
+#     team_name = team_name_map.get(team_id)
+#     team_data = teams_col.find_one({"team_name": team_name})
 
-    return render_template("teampage.html", team=team_data,team_id = team_id)
+#     return render_template("teampage.html", team=team_data,team_id = team_id)
 
+player_db = {
+    "KIA_TIGERS": "kia_player",
+    "LOTTE_GIANTS": "lotte_player",
+    "LG_TWINS": "lg_player",
+    "DOOSAN_BEARS": "dosan_player",
+    "SAMSUNG_LIONS": "samsung_player",
+    "KT_WIZ": "kt_player",
+    "KIWOOM_HEROS": "kiwoom_player",
+    "NC_DIONS": "nc_player",
+    "SSG_LANDERS": "ssg_player",
+    "HANWHA_EAGLES" : "hanwha_player"
+}
+
+#팀별 선수 DB객체 출력
+@app.route('/players/api/<teamName>')
+def showPlayerList(teamName):
+
+    #시간 확인하고 스크래핑하는 코드 나중에 추가
+    
+    #컬렉션 이름 가져오기
+    collection_name = player_db[teamName]
+    #컬렉션 접근
+    collection = db[collection_name]
+    #DB에서 데이터 불러오기
+    targets = collection.find({}, {'_id': 0, 'name' : 1, 'img' : 1, 'playerId' : 1})
+    #리스트에 넣어서 DB 전체 전달하기
+    resultList = list(targets)
+    #응답 전달
+    return jsonify(resultList)
+
+
+#선수 리스트 페이지로 라우팅
+@app.route('/playerlist')
+def showList():
+    return render_template('playerlist.html')
 
 # 서버 실행
 if __name__ == '__main__':
