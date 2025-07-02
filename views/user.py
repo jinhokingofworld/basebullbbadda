@@ -154,7 +154,8 @@ def inputLikes():
 #좋아하는 기사 출력 api 응답
 @user_page.route('/api/getLikes')
 def getLikes():
-    elements = list(db.user.find({}, {'_id': 0, 'likes': 1}))
+    user_id = session.get('id')
+    elements = db.user.find_one({'id' : user_id}, {'_id': 0})
     return jsonify(elements)
 
 # 마이 페이지 동적 라우팅
