@@ -183,11 +183,12 @@
                         // 댓글 작성 api 요청하는 부분
                         $.ajax({
                             type: 'POST',
-                            url: `/${pId}/comment`,
-                            data: { 'comment': dataComment },
+                            url: `/team/${teamname}/${pId}/comment`,
+                            data: { 'comment': dataComment, 'teamname': teamname },
                             success: function (response) {
                                 if (response['result'] == 'success') {
                                     alert(response['msg'])
+                                    load_comments()
                                     // 선수페이지로 리디렉션 (제자리 리디렉션)
                                     window.location.href = response['url'];
                                 }
@@ -207,6 +208,43 @@
             });
         }
 
+         // 댓글 호출 함수
+        function load_comments() {
+
+            let kor_team_id = "{{team['team_name']}}";
+
+            // 한글 -> 영어로
+            eng_team_id = team_id[kor_team_id]
+           
+
+            //DB에서 선수별 댓글 추출 API 요청하는 부분
+            $.ajax({
+                type: 'GET',
+                url: `/team/${eng_team_id}/${pId}/comment`,
+                data: {},
+                success: function(response) {
+                    if(response['result'] == 'success') {
+                        // console.log("응답 성공했음")
+                        // DB에서 추출한 값을 응답으로 받음
+                        let comments = response['comments'];
+                        
+                         // 데이터 받기전 기존 댓글 삭제
+                        $("#list_content").empty();
+
+                        // 배열안을 순회하는 함수
+                        comments.forEach((cmt) => {
+                        let temp_html =`
+                        <div class="comment-items">
+                            <p><strong> ${cmt.nickname}</strong> <small>${cmt.date}</small> </p>
+                            <p> ${cmt.comment}</p> <hr>
+                            </div>
+                         `;
+                            $("#list_content").append(temp_html);
+                        })
+                    }
+                }
+            });
+        }
 
     </script>
 
