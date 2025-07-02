@@ -33,48 +33,9 @@
                 </div>
             </div>
             <div class="all">
-                <div class="list-group"
+                <div id='likeList' class="list-group"
                     style="width: 100%; max-height: 300px; overflow: scroll; display: inline-block; ">
-                    <a href="#" class="list-group-item list-group-item-action active">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">List group item heading</h5>
-                            <small>3 days ago</small>
-                        </div>
-                        <p class="mb-1">Some placeholder content in a paragraph.</p>
-                        <small>And some small print.</small>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <div class="d-flex w-100 justify-content-betw een">
-                            <h5 class="mb-1">List group item heading</h5>
-                            <small class="text-muted">3 days ago</small>
-                        </div>
-                        <p class="mb-1">Some placeholder content in a paragraph.</p>
-                        <small class="text-muted">And some muted small print.</small>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">List group item heading</h5>
-                            <small class="text-muted">3 days ago</small>
-                        </div>
-                        <p class="mb-1">Some placeholder content in a paragraph.</p>
-                        <small class="text-muted">And some muted small print.</small>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">List group item heading</h5>
-                            <small class="text-muted">3 days ago</small>
-                        </div>
-                        <p class="mb-1">Some placeholder content in a paragraph.</p>
-                        <small class="text-muted">And some muted small print.</small>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">List group item heading</h5>
-                            <small class="text-muted">3 days ago</small>
-                        </div>
-                        <p class="mb-1">Some placeholder content in a paragraph.</p>
-                        <small class="text-muted">And some muted small print.</small>
-                    </a>
+                    <!-- 즐겨찾기 기사가 불러와지는 곳 -->
                 </div>
             </div>
             <br>
@@ -125,19 +86,46 @@
                         window.location.href = '/'
                     };
 
-                    //좋아하는 기사 로딩
-                    
+                    //좋아하는 기사 로딩 요청
+                    $.ajax({
+                        type: "GET",
+                        url: "/user/api/getLikes",
+                        data: {},
+                        success: function(response){
+                            response['likes'].forEach( like => {
+                                title = like['title']
+                                url = like['url']
+                                img = like['img']
+                                description = like['description']
+
+                                temp_html = `<a href="${url}" class="list-group-item list-group-item-action">
+                                            <div>
+                                                <img src="${img}"></img>
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h5 class="mb-1">${title}</h5>
+                                                </div>
+                                                <p class="mb-1">${description}</p>
+                                            </div>
+                                        </a>`;
+                                $(".list-group").append(temp_html);
+                            });
+
+                        },
+                        error: function() {
+                            alert('즐겨찾기 로딩에 실패했습니다.');
+                        }
+                    });
                 }
             });
         });
 
-        //좋아하는 기사 로딩 inputURL
-        function pickMyTeam() {
-            let input = $('#pickTeam').val();
+        //좋아하는 기사 DB저장요청
+        function takeURL() {
+            let input = $('#inputURL').val();
             $.ajax({
                 type: "POST",
-                url: "/user/api/idol",
-                data: {'idol' : input},
+                url: "/user/api/likes",
+                data: {'URL' : input},
                 success: function(response){
                     alert(response['msg'])
                 },

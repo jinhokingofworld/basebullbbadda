@@ -131,6 +131,44 @@ def chg_pic():
     db.user.update_one({'id' : id} , {'$set':{'idol': teamImg}})
     return jsonify({'result': 'success', 'msg': f'{targetTeam['team_name']}이 좋아하는 팀으로 등록 되었습니다.'})
 
+#좋아하는 기사 저장 api 응답
+@user_page.route('/api/likes', methods=['POST'])
+def inputLikes():
+    URL = request.form['URL']
+    ID = session.get('id')
+    #받은 URL 기사 스크랩
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
+    data = requests.get(URL, headers=headers)
+    soup = BeautifulSoup(data.text, 'html.parser')
+
+    article = soup.select_one('.content01 .sub-content .view')
+
+    aTitle = article.select_one('.title>h4>span').text
+    aImg = article.select_one('.detail>.img>img')
+    imgSrc = 'https:' + aImg['src']
+
+    aDescription = article.select_one('.detail > p:nth-of-type(2)').text
+
+    doc = {
+        'title' : aTitle,
+        'description' : aDescription,
+        'url' : URL,
+        'img' : imgSrc
+    }
+
+    #DB에 저장
+    db.user.update_one({'id': ID}, {'$push': {'likes' : doc}})
+
+    return jsonify({'msg': '즐겨찾기 저장에 성공했습니다.'})
+
+#좋아하는 기사 출력 api 응답
+@user_page.route('/api/getLikes')
+def getLikes():
+    user_id = session.get('id')
+    elements = db.user.find_one({'id' : user_id}, {'_id': 0})
+    return jsonify(elements)
+
 # 마이 페이지 동적 라우팅
 @user_page.route('/<id>')
 def routing_myPage(id):
