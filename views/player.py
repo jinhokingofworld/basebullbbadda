@@ -615,70 +615,70 @@ def player_clip_list(team_name_input): # ** player_clip_list 함수의 매개변
 # player_clip_list('SSG')
 
 #DB에서 팀별 댓글 추출 API 응답하는 부분
-@team_page.route('/team/<teamname>/<pid>/comment', methods=['GET'])
-def get_team_comments(pId):
+# @team_page.route('/team/<teamname>/<pid>/comment', methods=['GET'])
+# def get_team_comments(pId):
 
-    # DB
-    # 댓글 DB중 해당하는 팀의 댓글 추출 후 리스트화
-    comments = list(db.team_comment.find({'team_id': team_id}, {'_id': False}))
-    return jsonify({'result': 'success', 'comments': comments})
+#     # DB
+#     # 댓글 DB중 해당하는 팀의 댓글 추출 후 리스트화
+#     comments = list(db.team_comment.find({'team_id': team_id}, {'_id': False}))
+#     return jsonify({'result': 'success', 'comments': comments})
 
 
-# 댓글 등록 api 응답하는 부분
-@team_page.route('/team/<teamname>/<pid>/comment', methods =['POST'])
-def post_comment(pId):
+# # 댓글 등록 api 응답하는 부분
+# @team_page.route('/team/<teamname>/<pid>/comment', methods =['POST'])
+# def post_comment(pId):
         
-     # 입력받은 Comment 데이터 가져오기
-    input_comment = request.form.get('comment','').strip()
+#      # 입력받은 Comment 데이터 가져오기
+#     input_comment = request.form.get('comment','').strip()
 
-    if(input_comment == ''):
-        return jsonify({'result': 'fail', 'msg': '내용을 입력하세요.'})
+#     if(input_comment == ''):
+#         return jsonify({'result': 'fail', 'msg': '내용을 입력하세요.'})
 
 
-    #세션된 ID,닉네임 가져오기
-    target_user = session.get('id')
-    target_nickname = session.get('nickname')
+#     #세션된 ID,닉네임 가져오기
+#     target_user = session.get('id')
+#     target_nickname = session.get('nickname')
 
-    ######### 
-    # 전역변수 collections, team_name 사용 
-    #
-    # collections=[
-    # db.kia_player, db.lotte_player, db.lg_player, db.dosan_player, db.samsung_player,
-    # db.kt_player, db.hanhwa_player, db.kiwoom_player, db.nc_player, db.ssg_player]
-    #
-    # team_name=['KIA','롯데','LG','두산','삼성','KT','한화','키움','NC','SSG']
-    ###########
+#     ######### 
+#     # 전역변수 collections, team_name 사용 
+#     #
+#     # collections=[
+#     # db.kia_player, db.lotte_player, db.lg_player, db.dosan_player, db.samsung_player,
+#     # db.kt_player, db.hanhwa_player, db.kiwoom_player, db.nc_player, db.ssg_player]
+#     #
+#     # team_name=['KIA','롯데','LG','두산','삼성','KT','한화','키움','NC','SSG']
+#     ###########
 
-    #팀의 컬렉션 위치 찾기
-    idx = team_name.index(pId)
-    # DB에서 해당 선수의 팀 컬렉션 찾기
-    team_collection = collections[idx]
+#     #팀의 컬렉션 위치 찾기
+#     idx = team_name.index(pId)
+#     # DB에서 해당 선수의 팀 컬렉션 찾기
+#     team_collection = collections[idx]
     
-    # 해당 팀의 전체 선수 이름 추출 
-    team_player_name =team_collection.find({}, {"name": 1})
+#     # 해당 팀의 전체 선수 이름 추출 
+#     team_player_name =team_collection.find({}, {"name": 1})
 
-     # 전체 선수중 타겟 선수 찾기
-    for player in team_player_name:
-        target_player_name = player.get("name")
-        if not target_player_name:
-            continue
+#      # 전체 선수중 타겟 선수 찾기
+#     for player in team_player_name:
+#         target_player_name = player.get("name")
+#         if not target_player_name:
+#             continue
     
-    # DB의 각 팀별 컬렉션에서 해당 선수의 도큐멘트 형태로 변환
-        team_collection.update_one(
-            {"name": target_player_name},
-             {"$set": {
+#     # DB의 각 팀별 컬렉션에서 해당 선수의 도큐멘트 형태로 변환
+#         team_collection.update_one(
+#             {"name": target_player_name},
+#              {"$set": {
                  
-                'id' : target_user,
-                'nickname' : target_nickname,
-                'player_comment': input_comment,
-                'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#                 'id' : target_user,
+#                 'nickname' : target_nickname,
+#                 'player_comment': input_comment,
+#                 'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 
-                }
-             }
-            )
-    # DB에 아이디, 닉네임과 댓글 내용 데이터 저장
-    # 댓글 등록 성공 (응답 성공 반환)
-    return jsonify( {'result': 'success','msg' : '댓글 등록 성공!', 'nickname' : target_nickname, 'url' : '/team/<teamname>/<pId>'})
+#                 }
+#              }
+#             )
+#     # DB에 아이디, 닉네임과 댓글 내용 데이터 저장
+#     # 댓글 등록 성공 (응답 성공 반환)
+#     return jsonify( {'result': 'success','msg' : '댓글 등록 성공!', 'nickname' : target_nickname, 'url' : '/team/<teamname>/<pId>'})
 
 
 

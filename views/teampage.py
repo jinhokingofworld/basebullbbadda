@@ -364,8 +364,8 @@ def player_detail(teamName, pId):
 
 
 #DB에서 선수별 댓글 추출 API 응답하는 부분
-@team_page.route('/<teamname>/<pid>/comment', methods=['GET'])
-def get_team_comments(teamName, pId):
+@team_page.route('/<teamname>/playerId=<pId>/comment', methods=['GET'])
+def get_player_comments(teamName, pId):
 
     #컬렉션 이름 가져오기
     collection_name = player_db[teamName]
@@ -379,7 +379,7 @@ def get_team_comments(teamName, pId):
 
 # 댓글 등록 api 응답하는 부분
 @team_page.route('/<teamname>/<pid>/comment', methods =['POST'])
-def post_comment(teamName,pId):
+def post_player_comment(teamName,pId):
         
      # 입력받은 Comment 데이터 가져오기
     input_comment = request.form.get('comment','').strip()
