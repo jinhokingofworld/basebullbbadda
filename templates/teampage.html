@@ -1,54 +1,41 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" , initial-scale=1.0 />
-
-
     <!-- 이 부분은 부트스트랩을 불러오기 위한 코드입니다. : Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
         integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <title>팀페이지 제작 html</title>
-
-    <!-- 이 부분은 index.css를 불러오는 코드입니다.-->
+    <!-- 이 부분은 index.css를 불러오는 코드입니다.-->    
     <link rel="stylesheet" href="/static/css/index.css">
     <style>
         .all {
-            width: 60%;
-            height: 400px;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
-            padding: 0 20px;
-            margin: 20px 0;
+            padding: 20px;
             gap: 10px;
         }
-
-        
-
         body {
             padding: 20px;
         }
-
         .team-section {
             display: flex;
             border: 2px solid black;
             padding: 20px;
             margin-bottom: 30px;
         }
-
         .team-section img {
             width: 200px;
             height: 200px;
             margin-right: 30px;
         }
-
         .card-section {
             display: flex;
             margin-right: 10px;
             margin-left: 10px;
-
         }
-
         .card-box {
             border: 2px solid black;
             width: 50%;
@@ -56,7 +43,6 @@
             padding: 10px;
             margin: 10px;
         }
-
         .schedule-box,
         .community-box {
             border: 2px solid black;
@@ -64,26 +50,15 @@
             padding: 10px;
             margin-bottom: 20px;
         }
-
-        .list-schedule {
-            width: 40%;
-            padding: 0 20px;
-            margin: 20px 0;
-            overflow: scroll
+        .card-body {
+            margin: 20px;
         }
-
-        #middle {
-            padding: 20px;
-            width: 100%;
-            height: 400px;
-            display: flex;
-            justify-content: space-between;
-            border:gainsboro, 1px, solid;
-            border-radius: 4px;
+        #pImg {
+            width: 240px;
+            height: 320px;
+            margin: 10px;
         }
     </style>
-
-
     <!-- 이 부분은 jQuery와 bootstrap 번들 코드로 자바스크립트 코드를 임포트 합니다. . -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"
         integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
@@ -94,125 +69,91 @@
         integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
         crossorigin="anonymous"></script>
 </head>
-
 <body>
     <div class="container">
         {%include'./header.html'%}
         <br>
-
-        <!--팀 세부페이지 들어갈 곳-->
-        <div class="card mb-3" style="width: 100%;">
+        <!--팀세부페이지 들어갈 곳-->
+        <div class="card mb-4">
             <div class="row no-gutters">
-                <div class="col-md-4">
-                    <img src="{{ team['team_image'] }}" class="card-img" alt="{{ team['team_name'] }}">
+                <div class="col-md-3"> <!--프로필 사진-->
+                    <img id="pImg" src="{{ player['img'] }}" class="card-img" alt="{{ player['name'] }}">
                 </div>
                 <div class="col-md-8">
                     <div class="card-body">
-                        <h5 class="card-title">{{team['team_name']}}</h5>
+                        <h2 class="card-title">{{player['name']}}</h2>
                         <p class="card-text">
-                            연고지: {{ team['team_location'] }}<br>
-                            감독: {{ team['team_manage'] }}<br>
-                            우승 횟수: {{ team['team_win'] }}<br>
-                            팀컬러:<span
-                                style="background-color: {{ team['team_color'] }}; padding: 5px; border-radius: 10px; color: white;">
-                                {{ team['team_color'] }}
-                            </span>
-
-                            <br>
-                            팀 홈페이지 이동: <a href="{{ team['team_homepage'] }}" target="_blank">팀 홈페이지 바로가기</a>
+                            <h5>생년월일: {{player['birth']}}</h5>
+                            <h5>투타: {{player['toota']}}</h5>
+                            <h5>등번호: {{player['number']}}</h5>
+                            <h5>신체정보: {{player['spec']}}</h5>
+                            <h5>팀 이름: {{player['team_name']}}</h5>
                         </p>
                     </div>
                 </div>
             </div>
         </div>
-
-
-        <!-- 페이지 중간 정보 공간 -->
-        <div id="middle">
-                <!--팀기사 들어갈 곳-->
-                <div class="all" style="white-space: nowrap;">
-                    <div class="list-group" style="max-width: 540px; max-height: 300px; overflow: scroll; ">
-                        {% for article in team['team_news']%}
-                        {% if article.title and article.link and article.content and article.date and article.image %}
-                        <a href="{{article.link}}"><img style="background-size:cover;" src="{{article.image}}" class="list-group-item list-group-item-action"></img>
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">"
-                                    <a href="{{article.link}}" target="_blank">{{article.title}}</a></h5>
-                            </div>
-                            <p class="mb-1">{{article.content}}</p>
-                        </a>
-                        {% endif %}
-                        {% endfor %}
-                    </div>
+        <!--영상 기록 들어갈 리스트-->
+        <ul class="list-unstyled">
+            <li class="media">
+                <img src="..." class="mr-3" alt="...">
+                <div class="media-body">
+                    <h5 class="mt-0 mb-1">List-based media object</h5>
+                    <p>All my girls vintage Chanel baby. So you can have your cake. Tonight, tonight, tonight, I'm
+                        walking on air. Slowly swallowing down my fear, yeah yeah. Growing fast into a bolt of
+                        lightning. So hot and heavy, 'Til dawn. That fairy tale ending with a knight in shining
+                        armor. Heavy is the head that wears the crown.</p>
+                    
                 </div>
-            
-                </ul>
-
-                <!--경기일정 들어갈 곳 -->
-                <div class="list-schedule";">
-                    {% for schedule in team['team_schedule']%}
-                    {% if schedule.date and schedule.time and schedule.teams %}
-                    <a href="#" class="list-group-item list-group-item-action active">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">{{schedule.date}}</h5>
-                            <small>{{schedule.time}}</small>
-                        </div>
-                        <p class="mb-1">{{schedule.teams}}</p>
-                    </a>
-                    {% endif %}
-                    {% endfor %}
+            </li>
+            <li class="media my-4">
+                <img src="..." class="mr-3" alt="...">
+                <div class="media-body">
+                    <h5 class="mt-0 mb-1">List-based media object</h5>
+                    <p>Maybe a reason why all the doors are closed. Cause once you’re mine, once you’re mine. Be
+                        your teenage dream tonight. Heavy is the head that wears the crown. It's not even a holiday,
+                        nothing to celebrate. A perfect storm, perfect storm.</p>
                 </div>
-        </div>
-        <br>
-
+            </li>
+            <li class="media">
+                <img src="..." class="mr-3" alt="...">
+                <div class="media-body">
+                    <h5 class="mt-0 mb-1">List-based media object</h5>
+                    <p>Are you brave enough to let me see your peacock? There’s no going back. This is the last time
+                        you say, after the last line you break. At the eh-end of it all.</p>
+                </div>
+            </li>
+        </ul>
+            <div class= "player-clips-list">
+                <div class = "video-item"  style="width: 100%; max-height: 300px; overflow-y: scroll; display: inline-block; "
+                id="video_clips">{{player_clips}}</div>
+                <!-- 선수 클립 리스트가 들어갈 곳-->
+            </div>
             <!--명완 커뮤니티 기능 -->
-        
         <!-- 댓글상자 들어갈 곳"> </iv> -->
-        <div class = "container">
         <div class="card border-primary mb-3" style="width: auto;">
             <div class = card-header><strong><span class="comment-nickname" id="comment_nickname">{{nickname}}</span></strong></div>
             <p><textarea class="card-body text-secondary" style="width: 100%; height: 6.25em; border: none; resize: none;" id="comment_content" placeholder="댓글을 입력하세요."></textarea></p>
             <div>
                 <button onclick="postComment()" style="width: 100px; float:inline-end;" class=" btn btn-primary btnComment" id="comment_button"
-                    >등록</button>
+                    data-player_id="{{pId}}" type="button">등록</button>
             </div>
                 <div class="list-group"  style="width: 100%; max-height: 300px; overflow-y: scroll; display: inline-block; ">
                 <div class="comment-list text-muted" id="list_content"></div>
                    <!-- 댓글 리스트가 들어갈 곳 -->
-            </div> 
-                
-        </div>
-        </div>
-        </div>
-    
+        </div> 
     </div>
-
     <script>
-        
-        team_id = {
-            "KIA 타이거즈" : "KIA_TIGERS",
-            "롯데 자이언츠" : "LOTTE_GIANTS",
-            "LG 트윈스" : "LG_TWINS",
-            "두산 베어스" : "DOOSAN_BEARS",
-            "삼성 라이온즈" : "SAMSUNG_LIONS",
-            "KT 위즈" : "KT_WIZ",
-            "키움 히어로즈" : "KIWOOM_HEROS",
-            "NC 다이노스" : "NC_DIONS",
-            "SSG 랜더스" : "SSG_LANDERS",
-            "한화 이글스" : "HANWHA_EAGLES"
-        }
-
-
-        // 댓글 등록 함수
         function postComment() {
-
-            // textarea내 내용 추출
             let dataComment = $('#comment_content').val().trim();
-            let kor_na = "{{team['team_name']}}"
-            let eng_na = team_id[kor_na]
-            
-
-            // let encoded_team_id = encodeURIComponent(team_id);
+            // console.log(dataComment);
+            // let temp_html = `<textarea> ${dataComment}</textarea>`;
+            let player_id = $('#comment_button').data('pId');
+            console.log("플레이어 아이디:", player_id);
+            if (dataComment == "") {
+                alert("내용이 없습니다.");
+                return;
+            }
             //로그인 세션 api 요청하는 부분
             $.ajax({
                 type: 'GET',
@@ -220,18 +161,15 @@
                 data: {},
                 success: function (response) {
                     if (response['logged_in'] == true) {
-
-
-                        // 댓글 등록 api 요청하는 부분
+                        // 댓글 작성 api 요청하는 부분
                         $.ajax({
                             type: 'POST',
-                            url: `/team/${eng_na}/comment`,
+                            url: `/${pId}/comment`,
                             data: { 'comment': dataComment },
                             success: function (response) {
                                 if (response['result'] == 'success') {
                                     alert(response['msg'])
-                                    load_comments();
-                                    // 팀페이지로 리디렉션 (제자리 리디렉션)
+                                    // 선수페이지로 리디렉션 (제자리 리디렉션)
                                     window.location.href = response['url'];
                                 }
                                 else {
@@ -239,9 +177,7 @@
                                 }
                             }
                         });
-
                     }
-                        // 로그인 x시 false 반환하고 로그인 페이지 이동
                     else {
                         alert(response['msg'])
                         window.location.href = response['url'];  // 로그인 페이지로 리디렉션
@@ -249,59 +185,10 @@
                 }
             });
         }
-
-        // 댓글 호출 함수
-        function load_comments() {
-
-            let kor_team_id = "{{team['team_name']}}";
-
-            // 한글 -> 영어로
-            eng_team_id = team_id[kor_team_id]
-           
-
-            //DB에서 팀별 댓글 추출 API 요청하는 부분
-            $.ajax({
-                type: 'GET',
-                url: `/team/${eng_team_id}/comment`,
-                data: {},
-                success: function(response) {
-                    if(response['result'] == 'success') {
-                        // console.log("응답 성공했음")
-                        // DB에서 추출한 값을 응답으로 받음
-                        let comments = response['comments'];
-                        
-                         // 데이터 받기전 기존 댓글 삭제
-                        $("#list_content").empty();
-
-                        // 배열안을 순회하는 함수
-                        comments.forEach((cmt) => {
-                        let temp_html =`
-                        <div class="comment-items">
-                            <p><strong> ${cmt.nickname}</strong> <small>${cmt.date}</small> </p>
-                            <p> ${cmt.comment}</p> <hr>
-                            </div>
-                         `;
-                            $("#list_content").append(temp_html);
-                        })
-                        
-                        
-                    
-                    } 
-                }  
-            });
-        }
-
-
+        // // <!-- 새로고침시 댓글함수 호출 (댓글유지) -->
+        // $(document).ready(function() {
+        //     load_comments();
+        // });
     </script>
-    <!-- 새로고침시 댓글함수 호출 (댓글유지) -->
-    <script>
-    $(document).ready(function() {
-        load_comments();
-    });
-</script>
-
-
 </body>
-
-
 </html>
