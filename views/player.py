@@ -757,6 +757,7 @@ def player_clip_list(team_name_input): # ** player_clip_list 함수의 매개변
 # player_clip_list('NC')
 # player_clip_list('SSG')
 
+
 #DB에서 팀별 댓글 추출 API 응답하는 부분
 # @team_page.route('/team/<teamname>/<pid>/comment', methods=['GET'])
 # def get_team_comments(pId):
