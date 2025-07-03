@@ -15,11 +15,22 @@
     <link rel="stylesheet" href="/static/css/index.css">
     <style>
         .all {
-            display: flex;
-            justify-content: space-between;
+            width: 60%;
+            height: 400px;
             align-items: center;
-            padding: 20px;
+            padding: 0 20px;
+            margin: 20px 0;
             gap: 10px;
+        }
+
+        .list-unstyled {
+            width: 60%;
+            height: 400px;
+            align-items: center;
+            padding: 0 20px;
+            margin: 20px 0;
+            gap: 10px;
+            overflow: scroll;
         }
 
         body {
@@ -60,7 +71,24 @@
             height: 150px;
             padding: 10px;
             margin-bottom: 20px;
-        }   
+        }
+
+        .list-schedule {
+            width: 40%;
+            padding: 0 20px;
+            margin: 20px 0;
+            overflow: scroll
+        }
+
+        #middle {
+            padding: 20px;
+            width: 100%;
+            height: 400px;
+            display: flex;
+            justify-content: space-between;
+            border:gainsboro, 1px, solid;
+            border-radius: 4px;
+        }
     </style>
 
 
@@ -80,8 +108,8 @@
         {%include'./header.html'%}
         <br>
 
-        <!--팀세부페이지 들어갈 곳-->
-        <div class="card mb-3" style="max-width: 1080px;">
+        <!--팀 세부페이지 들어갈 곳-->
+        <div class="card mb-3" style="width: 100%;">
             <div class="row no-gutters">
                 <div class="col-md-4">
                     <img src="{{ team['team_image'] }}" class="card-img" alt="{{ team['team_name'] }}">
@@ -106,44 +134,58 @@
             </div>
         </div>
 
-        <!--팀기사 들어갈 곳-->
-        <div class="all" style="white-space: nowrap;">
-            <div class="list-group" style="max-width: 540px; max-height: 300px; overflow: scroll; ">
-                {% for article in team['team_news']%}
-                {% if article.title and article.link and article.content and article.date and article.image %}
-                <a href="{{article.link}}"><img style="background-size:cover;" src="{{article.image}}" class="list-group-item list-group-item-action"></img></a>
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">"
-                            <a href="{{article.link}}" target="_blank">{{article.title}}</a></h5>
+
+        <!-- 페이지 중간 정보 공간 -->
+        <div id="middle">
+                <!--팀기사 들어갈 곳-->
+                <!-- <div class="all" style="white-space: nowrap;">
+                    <div class="list-group" style="max-width: 540px; max-height: 300px; overflow: scroll; ">
+                        {% for article in team['team_news']%}
+                        {% if article.title and article.link and article.content and article.date and article.image %}
+                        <a href="{{article.link}}"><img style="background-size:cover;" src="{{article.image}}" class="list-group-item list-group-item-action"></img>
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">"
+                                    <a href="{{article.link}}" target="_blank">{{article.title}}</a></h5>
+                            </div>
+                            <p class="mb-1">{{article.content}}</p>
+                        </a>
+                        {% endif %}
+                        {% endfor %}
                     </div>
-                    <p class="mb-1">{{article.content}}</p>
-                {% endif %}
-                {% endfor %}
-            </div>
+                </div> -->
+                <ul class="list-unstyled">
+                    {% for article in team['team_news']%}
+                    {% if article.title and article.link and article.content and article.date and article.image %}
+                        <li class="media">
+                            <a href="{{article.link}}">
+                            <img style="background-size:cover;" src="{{article.image}}" class="mr-3">
+                            <div class="media-body">
+                            <h5 class="mt-0 mb-1">{{article.title}}</h5>
+                            <p>{{article.content}}</p>
+                            </div></a>
+                        </li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
 
-            <!--경기일정 들어갈 곳 -->
-            <div class="list-schedule" style="max-width: 500px; min-width: 480px; max-height: 300px; overflow: scroll;">
-                {% for schedule in team['team_schedule']%}
-                {% if schedule.date and schedule.time and schedule.teams %}
-                <a href="#" class="list-group-item list-group-item-action active">
-                    <div class="d-flex w-100 justify-content-between">
-                        <h5 class="mb-1">{{schedule.date}}</h5>
-                        <small>{{schedule.time}}</small>
-                    </div>
-                    <p class="mb-1">{{schedule.teams}}</p>
-                </a>
-                {% endif %}
-                {% endfor %}
-            </div>
-            </a>
-
-
-
+                <!--경기일정 들어갈 곳 -->
+                <div class="list-schedule";">
+                    {% for schedule in team['team_schedule']%}
+                    {% if schedule.date and schedule.time and schedule.teams %}
+                    <a href="#" class="list-group-item list-group-item-action active">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{schedule.date}}</h5>
+                            <small>{{schedule.time}}</small>
+                        </div>
+                        <p class="mb-1">{{schedule.teams}}</p>
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+        </div>
+        <br>
 
             <!--명완 커뮤니티 기능 -->
-
-        </div>
-
         
         <!-- 댓글상자 들어갈 곳"> </iv> -->
         <div class = "container">

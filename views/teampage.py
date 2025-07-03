@@ -10,6 +10,7 @@ from selenium.webdriver.common.by import By
 import time
 from flask import Flask, Blueprint, render_template, jsonify,request,session
 from datetime import datetime
+import player
 
 team_page = Blueprint('team', __name__, static_folder="static", template_folder="templates", url_prefix="/team")
 
@@ -347,16 +348,17 @@ def player_detail(teamName, pId):
     # DB에서 데이터 불러오기
     target = collection.find_one({'playerId' : pId}, {'_id' : 0})
 
-    #시간 확인
-    # now = time.time()
-    # lastUpdatedTime = float(target['lastUpdatedTime'])
+    # 시간 확인
+    now = time.time()
+    lastUpdatedTime = float(target['lastUpdatedTime'])
 
-    # #하루마다 선수 데이터 동적으로 가져와서 저장
-    # if now - lastUpdatedTime >= 3600 * 24:
-    #     scrapOne(pId)
-    # else:
-    #해당 선수 정보 DB에서 가져오기
-    pData = collection.find_one({'playerId' : pId}, {'_id' : 0})
+    #사흘마다 선수 데이터 동적으로 가져와서 저장
+    if now - lastUpdatedTime >= 3600 * 24 * 3:
+        #스크랩하는 함수
+        player.scrapAllPlayer(target['name'])
+    else:
+        #해당 선수 정보 DB에서 가져오기
+        pData = collection.find_one({'playerId' : pId}, {'_id' : 0})
 
     return render_template("player.html",player=pData, nickname = session.get('nickname','익명'))
 
