@@ -130,13 +130,13 @@ player_db = {
     "KIA_TIGERS": "kia_player",
     "LOTTE_GIANTS": "lotte_player",
     "LG_TWINS": "lg_player",
-    "DOOSAN_BEARS": "dosan_player",
+    "DOOSAN_BEARS": "doosan_player",
     "SAMSUNG_LIONS": "samsung_player",
     "KT_WIZ": "kt_player",
     "KIWOOM_HEROS": "kiwoom_player",
     "NC_DINOS": "nc_player",
     "SSG_LANDERS": "ssg_player",
-    "HANWHA_EAGLES" : "hanhwa_player"
+    "HANWHA_EAGLES" : "hanwha_player"
 }
 
 #팀별 선수 DB객체 출력
