@@ -81,11 +81,15 @@ def bring_users():
     #DB에서 ID 가져오기
     target_user = db.user.find_one({'id': input_ID})
 
+    #가져온 ID 존재여부 확인 -> ID 없을시 응답실패 반환
+    if not target_user:
+         return jsonify({'result':'fail','msg' : ' 회원정보가 올바르지 않습니다.','id' : input_ID})
+    
     #해당 ID의 닉네임 가져오기
     nickname = target_user.get('nickname')
 
-    # 가져온 ID 존재여부와 비번 일치여부 확인 -> 불일치시 응답실패 반환
-    if not target_user or target_user['pw'] !=input_PW:
+    # 비번 일치여부 확인 -> 불일치시 응답실패 반환
+    if target_user['pw'] !=input_PW:
         return jsonify({'result':'fail','msg' : ' 회원정보가 올바르지 않습니다.','id' : input_ID})
     
     # 가져온 정보 일치시 로그인 성공 & 응답 성공 반환

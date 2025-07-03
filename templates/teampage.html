@@ -151,6 +151,7 @@
                         {% endfor %}
                     </div>
                 </div>
+             
 
                 <!--경기일정 들어갈 곳 -->
                 <div class="list-schedule">
@@ -221,7 +222,6 @@
                 data: {},
                 success: function (response) {
                     if (response['logged_in'] == true) {
-
 
                         // 댓글 등록 api 요청하는 부분
                         $.ajax({

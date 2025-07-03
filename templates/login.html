@@ -65,51 +65,51 @@
      <script>
 
 
-      // $.ajax({
-      //   type: "GET",
-      //   url: `/user?user=`,
-      //   data: {},
-      //   success: function (response) {
-      //     console.log(response);
-      //     // if (response["result"] == "success") {
-      //     //   let login_ID = Response["#input-ID"]
-      //     //   let login_PW = Response["#input-PW"]
-      //     //   if (input-ID == login_ID && input-pw == login_PW) {
-      //     //     alert(response["로그인을 성공 하셨습니다."]);
-      //     //   }
-      //     //   else {
-      //     //     alert(response["일치하는 회원정보가 없습니다."])
-      //     //   }
-      //     // }
-      //   }
-      // });
+      $.ajax({
+        type: "GET",
+        url: `/user?user=`,
+        data: {},
+        success: function (response) {
+          console.log(response);
+          if (response["result"] == "success") {
+            let login_ID = response["#input-ID"]
+            let login_PW = response["#input-PW"]
+            if (input-ID == login_ID && input-pw == login_PW) {
+              alert(response['msg']);
+            }
+            else {
+              alert(response['msg'])
+            }
+          }
+        }
+      });
 
 
-      // function CheckId() {
-      //    let dataID= $('#input-ID').val();
-      //    let dataPW= $('#input-PW').val();
+      function CheckId() {
+         let dataID= $('#input-ID').val();
+         let dataPW= $('#input-PW').val();
 
-      //    if(dataID== "" || dataPW==""){
-      //       alert("아이디와 비밀번호를 입력하세요.");
-      //       return 
-      //     }
+         if(dataID== "" || dataPW==""){
+            alert("아이디와 비밀번호를 입력하세요.");
+            return 
+          }
 
-      // $.ajax({
-      //   type: "POST",
-      //   url: `/user`,
-      //   data:{id: dataID, pw: dataPW},
-      //   success: function(response) {
-      //     // 성공하면
-      //   if (response['result'] == 'success') {
-      //     alert(response['msg']);
-      //     }
-      //   else {
-      //     alert(response['로그인 실패'])
-      //   }
+      $.ajax({
+        type: "POST",
+        url: `/user`,
+        data:{id: dataID, pw: dataPW},
+        success: function(response) {
+          // 성공하면
+        if (response['result'] == 'success') {
+          alert(response['msg']);
+          }
+        else {
+          alert(response['msg'])
+        }
         
-      //   }
-      // })
-      // }
+        }
+      })
+      }
       // 로그인 함수
        function loginID() {
 
@@ -123,25 +123,12 @@
             }
     
            
-    //     // 로그인 api 요청하는 부분
-    //     $.ajax({
-    //     type: "POST",
-    //     url: `/user/api/login`,
-    //     data: {id: dataID, pw: dataPW, },
-    //     success: function (response) {
-    //         alert(response['nickname'] + '님 환영합니다.')
-    //         // 메인페이지로 리디렉션
-    //         window.location.href = response['url'];
-    //     }
-    // });
-
-       // 로그인 api 요청하는 부분
+        // 로그인 api 요청하는 부분
         $.ajax({
         type: "POST",
         url: `/user/api/login`,
-        data: {id: dataID, pw: dataPW},
-        success: function (response)
-          { 
+        data: {id: dataID, pw: dataPW, },
+        success: function (response) {
             // 응답이 성공하면
             if (response['result'] =='success') {
             alert(response['msg'])
@@ -152,8 +139,28 @@
               //응답이 실패하면 
               alert(response['msg'])
             }
-          }
-        });
+        }
+    });
+
+      //  // 로그인 api 요청하는 부분
+      //   $.ajax({
+      //   type: "POST",
+      //   url: `/user/api/login`,
+      //   data: {id: dataID, pw: dataPW},
+      //   success: function (response)
+      //     { 
+      //       // 응답이 성공하면
+      //       if (response['result'] =='success') {
+      //       alert(response['msg'])
+      //         // 메인페이지로 리디렉션
+      //         window.location.href = response['url'];
+      //       }
+      //       else{
+      //         //응답이 실패하면 
+      //         alert(response['msg'])
+      //       }
+      //     }
+      //   });
 
 }
 
