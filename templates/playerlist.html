@@ -83,18 +83,18 @@
 
     <script>
         //페이지 로딩 시 호출 -> 잘 안되는 것 같음
-        // $(document).ready(() => {
-        //     const activeTab = $('.nav-link.active').attr('id'); // "KIA_TIGERS-tab"
-        //     const team_id = activeTab.replace('-tab', ''); // "KIA_TIGERS"
-        //     loadPlayers(team_id);  // 위에서 만든 함수 그대로 호출
-        // });
-
-        //페이지 로딩 시 호출
-        $('button[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-            const activeTab = $('.nav-link.active').attr('id');
-            const team_id = activeTab.replace('-tab', '');
-            loadPlayers(team_id);
+        $(document).ready(() => {
+            const activeTab = $('.nav-link.active').attr('id'); // "KIA_TIGERS-tab"
+            const team_id = activeTab.replace('-tab', ''); // "KIA_TIGERS"
+            loadPlayers(team_id);  // 위에서 만든 함수 그대로 호출
         });
+
+        // //페이지 로딩 시 호출
+        // $('button[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        //     const activeTab = $('.nav-link.active').attr('id');
+        //     const team_id = activeTab.replace('-tab', '');
+        //     loadPlayers(team_id);
+        // });
 
         //이벤트 리스너 중 하나인'shown.bs.tab'에 반응해서 함수를 실행
         $('button[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -114,15 +114,6 @@
                     for (let i = 0; i < response.length; i++){
                         let player = response[i];
                         let url = `team/${teamName}/playerId=${player.playerId}`;
-
-                        // let temp_html = `<div class="card">
-                        //                     <a href="${url}" class="btn p-2">
-                        //                     <img src="${player.img}" class="card-img-top" alt="...">
-                        //                     <div class="card-body">
-                        //                         <h5 class="card-title">${player.name}</h5>
-                        //                     </div>
-                        //                     </a>
-                        //                 </div>`;
 
                         let html = `<div class="col mb-4">
                                         <div class="card h-100">
