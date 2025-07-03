@@ -99,37 +99,23 @@
 
         <!-- 페이지 중간 정보 공간 -->
         <div id="middle">
-                <!--팀기사 들어갈 곳-->
-                <!-- <div class="all" style="white-space: nowrap;">
+                <!--선수 기사 들어갈 곳-->
+                <div class="all" style="white-space: nowrap;">
                     <div class="list-group" style="max-width: 540px; max-height: 300px; overflow: scroll; ">
-                        {% for article in team['team_news']%}
-                        {% if article.title and article.link and article.content and article.date and article.image %}
-                        <a href="{{article.link}}"><img style="background-size:cover;" src="{{article.image}}" class="list-group-item list-group-item-action"></img>
-                            <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1">"
-                                    <a href="{{article.link}}" target="_blank">{{article.title}}</a></h5>
-                            </div>
-                            <p class="mb-1">{{article.content}}</p>
-                        </a>
-                        {% endif %}
+                        {% for article in player['news']%}
+                            {% if article.title and article.link and article.content and article.image %}
+                            <a href="{{article.link}}"><img style="background-size:cover;" src="{{article.image}}" class="list-group-item list-group-item-action"></img>
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">"
+                                        <p href="{{article.link}}" target="_blank">{{article.title}}</p></h5>
+                                </div>
+                                <p class="mb-1">{{article.content}}</p>
+                            </a>
+                            {% endif %}
                         {% endfor %}
                     </div>
-                </div> -->
+                </div>
 
-                <!-- 경기일정 들어갈 곳
-                <div class="list-schedule";">
-                    {% for schedule in team['team_schedule']%}
-                    {% if schedule.date and schedule.time and schedule.teams %}
-                    <a href="#" class="list-group-item list-group-item-action active">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">{{schedule.date}}</h5>
-                            <small>{{schedule.time}}</small>
-                        </div>
-                        <p class="mb-1">{{schedule.teams}}</p>
-                    </a>
-                    {% endif %}
-                    {% endfor %}
-                </div> -->
         </div>
         <br>
 
