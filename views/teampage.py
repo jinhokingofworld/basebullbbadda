@@ -129,7 +129,7 @@ player_db = {
     "SAMSUNG_LIONS": "samsung_player",
     "KT_WIZ": "kt_player",
     "KIWOOM_HEROS": "kiwoom_player",
-    "NC_DIONS": "nc_player",
+    "NC_DINOS": "nc_player",
     "SSG_LANDERS": "ssg_player",
     "HANWHA_EAGLES" : "hanwha_player"
 }
@@ -359,3 +359,67 @@ def player_detail(teamName, pId):
     pData = collection.find_one({'playerId' : pId}, {'_id' : 0})
 
     return render_template("player.html",player=pData, nickname = session.get('nickname','익명'))
+
+
+
+
+#DB에서 선수별 댓글 추출 API 응답하는 부분
+@team_page.route('/<teamname>/playerId=<pId>/comment', methods=['GET'])
+def get_player_comments(teamName, pId):
+
+    #컬렉션 이름 가져오기
+    collection_name = player_db[teamName]
+    #컬렉션 접근
+    collection = db[collection_name]
+    player = collection.find_one({'playerId': pId}, {'_id': 0, 'player_comment_list': 1})
+    comment_list = player.get('player_comment_list', []) if player else []
+
+    return jsonify({'result': 'success', 'comments': comment_list})
+
+
+# 댓글 등록 api 응답하는 부분
+@team_page.route('/<teamname>/<pid>/comment', methods =['POST'])
+def post_player_comment(teamName,pId):
+        
+     # 입력받은 Comment 데이터 가져오기
+    input_comment = request.form.get('comment','').strip()
+
+    if(input_comment == ''):
+        return jsonify({'result': 'fail', 'msg': '내용을 입력하세요.'})
+
+
+    #세션된 ID,닉네임 가져오기
+    target_user = session.get('id')
+    target_nickname = session.get('nickname')
+
+
+    #컬렉션 이름 가져오기
+    collection_name = player_db[pId]
+    #컬렉션 접근
+    collection_name_player = db[collection_name]
+    
+    # 해당 팀의 전체 선수 이름 추출 
+    team_player_name =collection_name.find({}, {"name": 1})
+
+     # 전체 선수중 타겟 선수 찾기
+    for player in team_player_name:
+        target_player_name = player.get("name")
+        if not target_player_name:
+            continue
+    
+    # DB의 각 팀별 컬렉션에서 해당 선수의 도큐멘트 형태로 변환
+        collection_name_player.update_one(
+            {"name": target_player_name},
+             {"$set": {
+                 
+                'id' : target_user,
+                'nickname' : target_nickname,
+                'player_comment': input_comment,
+                'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                
+                }
+             }
+            )
+    # DB에 아이디, 닉네임과 댓글 내용 데이터 저장
+    # 댓글 등록 성공 (응답 성공 반환)
+    return jsonify( {'result': 'success','msg' : '댓글 등록 성공!', 'nickname' : target_nickname, 'url' : f'/team/{teamName}/playerId={pId}'})
