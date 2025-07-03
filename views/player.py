@@ -11,6 +11,7 @@ import time
 from flask import Flask, Blueprint, render_template, jsonify,request,session
 from datetime import datetime
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime
 
@@ -47,7 +48,7 @@ collections=[
     db.kia_player, db.lotte_player, db.lg_player, db.dosan_player, db.samsung_player,
     db.kt_player, db.hanhwa_player, db.kiwoom_player, db.nc_player, db.ssg_player
 ]
-team_name=['KIA','롯데','LG','두산','삼성','KT','한화','키움','NC','SSG']
+team_names=['KIA','롯데','LG','두산','삼성','KT','한화','키움','NC','SSG']
 team_code_id={
     "KIA 타이거즈": "HT",
     "롯데 자이언츠": "LT",
@@ -60,6 +61,9 @@ team_code_id={
     "NC 다이노스": "NC",
     "SSG 랜더스": "SK"
 }
+
+team_id=['HT','LT','LG','OB','SS','KT','HH','WO','NC','SK']
+team_name=['KIA','롯데','LG','두산','삼성','KT','한화','키움','NC','SSG']
 #kbo에서 선수 리스트 가져오기 
 def player_list():
     url = "https://www.koreabaseball.com/Player/Register.aspx"
@@ -67,8 +71,8 @@ def player_list():
     time.sleep(1)
 
 
-    team_id=['HT','LT','LG','OB','SS','KT','HH','WO','NC','SK']
-    team_name=['KIA','롯데','LG','두산','삼성','KT','한화','키움','NC','SSG']
+    # team_id=['HT','LT','LG','OB','SS','KT','HH','WO','NC','SK']
+    # team_name=['KIA','롯데','LG','두산','삼성','KT','한화','키움','NC','SSG']
 
 # 팀별 반복
     for idx, (tid,tname) in enumerate(zip(team_id, team_name)):
@@ -76,7 +80,7 @@ def player_list():
             # 팀 버튼 클릭
             team_btn = driver.find_element(By.XPATH, f'//li[@data-id="{tid}"]/a')
             team_btn.click()
-            time.sleep(2)
+            time.sleep(1)
 
             # HTML 파싱
             soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -106,6 +110,85 @@ def player_list():
             print(f"{tname} 처리 중 오류 발생: {e}")
     driver.quit()
 
+#팀 뉴스기사 가져오기 
+def get_player_news(player_name):
+    driver.get("https://www.koreabaseball.com/MediaNews/News/BreakingNews/List.aspx")
+    time.sleep(1)
+
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    items = soup.select("ul.boardPhoto > li")
+
+    news_list = []
+    for item in items:
+        title_tag = item.select_one("strong > a")
+        content_tag = item.select_one(".txt p")
+        date_tag = item.select_one("span.date")
+        image_tag = item.select_one(".boardPhoto .photo > a img")
+
+
+        if title_tag:
+            href = title_tag.get('href', '')
+            if href.startswith("http"):
+                link = href
+            elif href.startswith("View.aspx"):
+                link = "https://www.koreabaseball.com/MediaNews/News/BreakingNews/" + href
+            elif href.startswith("/"):
+                link = "https://www.koreabaseball.com" + href
+            else:
+                link = "https://www.koreabaseball.com/" + href
+
+            title = title_tag.get_text(strip=True)
+            content = content_tag.get_text(strip=True) if content_tag else ""
+
+
+            if player_name in title or player_name in content:
+
+                news = {
+                    "title": title,
+                    "link": link,
+                    "content": content,
+                    "date": date_tag.get_text(strip=True) if date_tag else "",
+                    "image":image_tag['src'] if image_tag and image_tag.has_attr('src') else ""
+                }
+                news_list.append(news)
+
+        if len(news_list)==3: 
+            break
+    return news_list
+
+
+#mongoDB에 뉴스기사 저장 
+def update_all_player_new():
+    for col, team_name in zip(collections, team_names):
+        players = list(col.find({}))
+        print(f"\n[{team_name}] 뉴스 업데이트 시작")
+
+        for player in players:
+            name = player.get("name")
+            if not name:
+                continue
+
+            news = get_player_news(name)
+            if news:
+                col.update_one(
+                    {"_id": player["_id"]},
+                    {"$set": {"news": news}}
+                )
+                print(f" - {name} 뉴스 저장 완료")
+
+update_all_player_new()
+
+
+# def remove_all_news_fields():
+#     for col, team_name in zip(collections, team_names):
+#         print(f"[{team_name}] 기존 뉴스 필드 제거 중...")
+#         result = col.update_many(
+#             {"news": {"$exists": True}},  # news 필드가 존재하는 문서만 대상으로
+#             {"$unset": {"news": ""}}     # 해당 필드 제거
+#         )
+#         print(f" - 제거된 문서 수: {result.modified_count}")
+
+# remove_all_news_fields()
 #선수 아이디 mongoDB 삽입  (한화)
 def hanhwa_id_list():
     hanhwa_id=['82211', '73750', '85570', '74745', '95409', '72108' ,'78745','84510','82374', '93112','72139',
@@ -387,6 +470,7 @@ def nc_id_list():
             {"_id": player["_id"]},
             {"$set":{"playerId": pid}}
         )
+
 #nc 선수 이미지 따기
 def nc_image_list():
     players=list(teams_col9.find({"playerId":{"$exists":True}}))
@@ -547,7 +631,7 @@ def get_player_clips(player_name):
                 "date": meta_spans[0].get_text(strip=True),
                 "views": meta_spans[1].get_text(strip=True)
             }
-            video_list.append(video)
+            # video_list.append(video)
 
         return video_list
 
