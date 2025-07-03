@@ -358,6 +358,8 @@ def get_player_comments(teamName):
     #컬렉션 접근
     collection = db[collection_name]
     
+
+    
     # print(collection)
 
     # 해당 팀의 전체 선수 이름 추출 
