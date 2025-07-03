@@ -178,10 +178,6 @@
             // let temp_html = `<textarea> ${dataComment}</textarea>`;
             let player_id = $('#comment_button').data('pId');
             console.log("플레이어 아이디:", player_id);
-            if (dataComment == "") {
-                alert("내용이 없습니다.");
-                return;
-            }
 
             //로그인 세션 api 요청하는 부분
             $.ajax({
@@ -232,7 +228,7 @@
             //DB에서 선수별 댓글 추출 API 요청하는 부분
             $.ajax({
                 type: 'GET',
-                url: `/team/${eng_team_id}/${pId}/comment`,
+                url: `/team/${eng_team_id}/playerId=${pId}/comment`,
                 data: {},
                 success: function(response) {
                     if(response['result'] == 'success') {
