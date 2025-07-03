@@ -96,9 +96,26 @@
                 </div>
             </div>
         </div>
+
         <!-- 페이지 중간 정보 공간 -->
        <div id="middle">
-             <!-- 선수 영상 들어갈 곳 -->
+            <!--선수 기사 들어갈 곳-->
+                    <div class="all" style="white-space: nowrap;">
+                        <div class="list-group" style="max-width: 540px; max-height: 300px; overflow: scroll; ">
+                            {% for article in player['news']%}
+                                {% if article.title and article.link and article.content and article.image %}
+                                <a href="{{article.link}}"><img style="background-size:cover;" src="{{article.image}}" class="list-group-item list-group-item-action"></img>
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">"
+                                            <p href="{{article.link}}" target="_blank">{{article.title}}</p></h5>
+                                    </div>
+                                    <p class="mb-1">{{article.content}}</p>
+                                </a>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+            <!-- 선수 영상 들어갈 곳 -->
             <div class="list-schedule">
                 {% for clip in player['player_clips'] %}
                 {% if clip.title %}
@@ -123,21 +140,15 @@
                 {% endfor %}
             </div>
         </div>
-
-        </div>
         <br>
-                
-                
-            </div>
 
 
 
 
 
-            <!--명완 커뮤니티 기능 -->
-
+        <!--명완 커뮤니티 기능 -->
         <!-- 댓글상자 들어갈 곳"> </iv> -->
-         <div class = "container2">
+        <div class = "container2">
         <div class="card border-primary mb-3" style="width: auto;">
             <div class = card-header><strong><span class="comment-nickname" id="comment_nickname">{{nickname}}</span></strong></div>
             <p><textarea class="card-body text-secondary" style="width: 100%; height: 6.25em; border: none; resize: none;" id="comment_content" placeholder="댓글을 입력하세요."></textarea></p>
