@@ -69,7 +69,7 @@ def getRanking():
     lastUpdatedTime = float(target['lastUpdatedTime'])
     #10분 이상 지났으면,
     if (now - lastUpdatedTime) >= 600:
-        #새로 스크랩 해오기
+       #새로 스크랩 해오기
         result = scrapRanking()
     else:
         #DB에 저장된 랭킹 불러오기

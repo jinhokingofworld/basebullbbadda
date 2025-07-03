@@ -143,7 +143,7 @@
                     type="button">등록</button>
             </div>
                 <div class="list-group"  style="width: 100%; max-height: 300px; overflow-y: scroll; display: inline-block; ">
-                <div class="comment-list text-muted" id="list_content"></div>
+                <div class="comment-list text-muted" id="list_comments"></div>
                    <!-- 댓글 리스트가 들어갈 곳 -->
         </div> 
     </div>
@@ -183,6 +183,7 @@
                             success: function (response) {
                                 if (response['result'] == 'success') {
                                     alert(response['msg'])
+                                    load_comments()
                                     // 선수페이지로 리디렉션 (제자리 리디렉션)
                                     window.location.href = response['url'];
                                 }
@@ -203,6 +204,8 @@
 
          function load_comments() {
 
+             let path = window.location.pathname;
+
             // 정규표현식으로 URL에서 playerId 추출
             let match = path.match(/playerId=(\d+)/);
             let pId = match ? match[1] : null;
@@ -220,13 +223,12 @@
                 url: `/team/${teamName}/playerId=${pId}/comment`,
                 data: {},
                 success: function(response) {
-                    if(response['result'] == 'success') {
-                        // console.log("응답 성공했음")
+                        console.log("응답 성공했음")
                         // DB에서 추출한 값을 응답으로 받음
                         let comments = response['comments'];
                         
                          // 데이터 받기전 기존 댓글 삭제
-                        $("#list_content").empty();
+                        $("#list_comments").empty();
 
                         // 배열안을 순회하는 함수
                         comments.forEach((cmt) => {
@@ -236,12 +238,10 @@
                             <p> ${cmt.comment}</p> <hr>
                             </div>
                          `;
-                            $("#list_content").append(temp_html);
+                            $("#list_comments").append(temp_html);
                         })
                         
-                        
-                    
-                    } 
+             
                 }  
             });
         }

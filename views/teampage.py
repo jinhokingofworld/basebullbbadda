@@ -273,22 +273,13 @@ def dbcall(teamName):
 
 
 #DB에서 팀별 댓글 추출 API 응답하는 부분
-@team_page.route('/<teamName>/comment', methods=['GET'])
-def get_team_comments(teamName):
-    
-    target_user = session.get('id')
-    target_nickname = session.get('nickname')
-
-    # 영어를 한글로
-    name = team_name[teamName]
-    # DB에 도큐멘트 형태로 변환
-    doc = {
-        'team_id': name, 'id' : target_user, 'nickname' :target_nickname, 'comment' : input_comment,  'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S') } #좋아요 추가시 user db와 이름혼동문제 
-    db.team_comment.insert_one(doc)
-    # DB에 아이디, 닉네임과 댓글 내용 데이터 저장
-    # 댓글 등록 성공 (응답 성공 반환)
-    return jsonify( {'result': 'success','msg' : '댓글 등록 성공!', 'nickname' : target_nickname, 'url' : f'{teamName}'})
-    
+@team_page.route('/<eng_team_id>/comment', methods=['GET'])
+def get_team_comments(eng_team_id):
+  
+    name = team_name[eng_team_id]
+    # 댓글 DB중 해당하는 팀의 댓글 추출 후 리스트화
+    comments = list(db.team_comment.find({'team_id': name}, {'_id': False}))
+    return jsonify({'result': 'success', 'comments': comments})
 
 #팀 페이지 라우팅 
 @team_page.route('/<teamName>')
@@ -341,39 +332,44 @@ def player_detail(teamName, pId):
         player.scrapAllPlayer(target['name'])
     else:
         #해당 선수 정보 DB에서 가져오기
-        pData = collection.find_one({'playerId' : pId}, {'_id' : 0})
-
+        pData = collection.find_one({'playerId' : str(pId)}, {'_id' : 0})
+        
+        print(jsonify(pData))
     return render_template("player.html",player=pData, nickname = session.get('nickname','익명'))
 
 
 
 
 #DB에서 선수별 댓글 추출 API 응답하는 부분
-@team_page.route('/<teamname>/playerId=<pId>/comment', methods=['GET'])
-def get_player_comments(teamName):
-
+@team_page.route('/<teamName>/playerId=<pId>/comment', methods=['GET'])
+def get_player_comments(teamName,pId):
+    print("응답 요청함")
     #컬렉션 이름 가져오기
     collection_name = player_db.get(teamName)
 
+    print(collection_name)
     #컬렉션 접근
     collection = db[collection_name]
     
-
+    print(collection)
     
     # print(collection)
 
-    # 해당 팀의 전체 선수 이름 추출 
-    team_player_name =collection.find({}, {"name": 1})
-
-     # 전체 선수중 타겟 선수 찾기
-    for player in team_player_name:
-        target_player_name = player.get("name")
-        if not target_player_name:
-            continue
+    # # 해당 팀의 전체 선수 이름 추출 
+    # team_player_name =collection.find({}, {"name": 1})
 
 
-    player = collection.find_one({'playerId': target_player_name}, {'_id': 0, 'player_comment_list': 1})
-    comment_list = player.get('player_comment_list', []) if player else []
+    #  # 전체 선수중 타겟 선수 찾기
+    # for player in team_player_name:
+    #     target_player_name = player.get("name")
+    #     if not target_player_name:
+    #         continue
+    player_info =collection.find_one({'playerId': str(pId)}, {'player_comment_list': 1,})
+    
+    if not player_info:
+        return jsonify({'result': 'fail', 'msg': '해당 선수를 찾을 수 없습니다.'})
+    
+    comment_list = player_info['player_comment_list']
 
     return jsonify({'result': 'success', 'comments': comment_list})
 
