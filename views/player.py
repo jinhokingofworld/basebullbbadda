@@ -110,77 +110,6 @@ def player_list():
             print(f"{tname} 처리 중 오류 발생: {e}")
     driver.quit()
 
-#팀 뉴스기사 가져오기 
-# def get_player_news(player_name):
-#     driver.get("https://www.koreabaseball.com/MediaNews/News/BreakingNews/List.aspx")
-#     time.sleep(1)
-
-#     soup = BeautifulSoup(driver.page_source, 'html.parser')
-#     items = soup.select("ul.boardPhoto > li")
-
-#     news_list = []
-#     for item in items:
-#         title_tag = item.select_one("strong > a")
-#         content_tag = item.select_one(".txt p")
-#         date_tag = item.select_one("span.date")
-#         image_tag = item.select_one(".boardPhoto .photo > a img")
-
-
-#         if title_tag:
-#             href = title_tag.get('href', '')
-#             if href.startswith("http"):
-#                 link = href
-#             elif href.startswith("View.aspx"):
-#                 link = "https://www.koreabaseball.com/MediaNews/News/BreakingNews/" + href
-#             elif href.startswith("/"):
-#                 link = "https://www.koreabaseball.com" + href
-#             else:
-#                 link = "https://www.koreabaseball.com/" + href
-
-#             title = title_tag.get_text(strip=True)
-#             content = content_tag.get_text(strip=True) if content_tag else ""
-
-
-#             if player_name in title or player_name in content:
-
-#                 news = {
-#                     "title": title,
-#                     "link": link,
-#                     "content": content,
-#                     "date": date_tag.get_text(strip=True) if date_tag else "",
-#                     "image":image_tag['src'] if image_tag and image_tag.has_attr('src') else ""
-#                 }
-#                 news_list.append(news)
-
-#         if len(news_list)==3: 
-#             break
-#     return news_list
-
-
-#mongoDB에 뉴스기사 저장 
-# def update_all_player_new():
-#     for col, team_name in zip(collections, team_names):
-#         players = list(col.find({}))
-#         print(f"\n[{team_name}] 뉴스 업데이트 시작")
-
-#         for player in players:
-#             name = player.get("name")
-#             if not name:
-#                 continue
-
-#             news = get_player_news(name)
-#             if news:
-#                 col.update_one(
-#                     {"_id": player["_id"]},
-#                     {"$set": {"news": news}}
-#                 )
-#                 print(f" - {name} 뉴스 저장 완료")
-
-# update_all_player_new()
-
-
-# def get_player_news(player_name):
-
 
 def get_player_news(player_name):
     query = f"kbo {player_name}"
@@ -242,7 +171,6 @@ def update_all_player_news():
                 )
                 print(f" - {name} 뉴스 저장 완료")
 
-# 모든 선수기사 스크래핑 함수
 # update_all_player_news()
 
 #선수 아이디 mongoDB 삽입  (한화)
@@ -621,30 +549,27 @@ def ssg_image_list():
             {"_id":player["_id"]},
             {"$set":{"img":img_uri}}
         )
-
-def scrapAllPlayer(player_name):
-    player_list()
-    hanhwa_id_list()
-    hanhwa_image_list()
-    dosan_id_list()
-    dosan_image_list()
-    kia_id_list()
-    kia_image_list()
-    kiwoom_id_list()
-    kiwoom_image_list()
-    kt_id_list()
-    kt_image_list()
-    lg_id_list()
-    lg_image_list()
-    lotte_id_list()
-    lotte_image_list()
-    nc_id_list()
-    nc_image_list()
-    samsung_id_list()
-    samsung_image_list()
-    ssg_id_list()
-    ssg_image_list()
-    get_player_clips(player_name)
+# hanhwa_id_list()
+# player_list()
+# hanhwa_image_list()
+# dosan_id_list()
+# dosan_image_list()
+# kia_id_list()
+# kia_image_list()
+# kiwoom_id_list()
+# kiwoom_image_list()
+# kt_id_list()
+# kt_image_list()
+# lg_id_list()
+# lg_image_list()
+# lotte_id_list()
+# lotte_image_list()
+# nc_id_list()
+# nc_image_list()
+# samsung_id_list()
+# samsung_image_list()
+# ssg_id_list()
+# ssg_image_list()
 
     # 선수별 영상 추출 작업 시작
 def get_player_clips(player_name):
@@ -757,72 +682,71 @@ def player_clip_list(team_name_input): # ** player_clip_list 함수의 매개변
 # player_clip_list('NC')
 # player_clip_list('SSG')
 
-
 #DB에서 팀별 댓글 추출 API 응답하는 부분
-# @team_page.route('/team/<teamname>/<pid>/comment', methods=['GET'])
-# def get_team_comments(pId):
+@team_page.route('/team/<teamname>/<pid>/comment', methods=['GET'])
+def get_team_comments(pId):
 
-#     # DB
-#     # 댓글 DB중 해당하는 팀의 댓글 추출 후 리스트화
-#     comments = list(db.team_comment.find({'team_id': team_id}, {'_id': False}))
-#     return jsonify({'result': 'success', 'comments': comments})
+    # DB
+    # 댓글 DB중 해당하는 팀의 댓글 추출 후 리스트화
+    comments = list(db.team_comment.find({'team_id': team_id}, {'_id': False}))
+    return jsonify({'result': 'success', 'comments': comments})
 
 
-# # 댓글 등록 api 응답하는 부분
-# @team_page.route('/team/<teamname>/<pid>/comment', methods =['POST'])
-# def post_comment(pId):
+# 댓글 등록 api 응답하는 부분
+@team_page.route('/team/<teamname>/<pid>/comment', methods =['POST'])
+def post_comment(pId):
         
-#      # 입력받은 Comment 데이터 가져오기
-#     input_comment = request.form.get('comment','').strip()
+     # 입력받은 Comment 데이터 가져오기
+    input_comment = request.form.get('comment','').strip()
 
-#     if(input_comment == ''):
-#         return jsonify({'result': 'fail', 'msg': '내용을 입력하세요.'})
+    if(input_comment == ''):
+        return jsonify({'result': 'fail', 'msg': '내용을 입력하세요.'})
 
 
-#     #세션된 ID,닉네임 가져오기
-#     target_user = session.get('id')
-#     target_nickname = session.get('nickname')
+    #세션된 ID,닉네임 가져오기
+    target_user = session.get('id')
+    target_nickname = session.get('nickname')
 
-#     ######### 
-#     # 전역변수 collections, team_name 사용 
-#     #
-#     # collections=[
-#     # db.kia_player, db.lotte_player, db.lg_player, db.dosan_player, db.samsung_player,
-#     # db.kt_player, db.hanhwa_player, db.kiwoom_player, db.nc_player, db.ssg_player]
-#     #
-#     # team_name=['KIA','롯데','LG','두산','삼성','KT','한화','키움','NC','SSG']
-#     ###########
+    ######### 
+    # 전역변수 collections, team_name 사용 
+    #
+    # collections=[
+    # db.kia_player, db.lotte_player, db.lg_player, db.dosan_player, db.samsung_player,
+    # db.kt_player, db.hanhwa_player, db.kiwoom_player, db.nc_player, db.ssg_player]
+    #
+    # team_name=['KIA','롯데','LG','두산','삼성','KT','한화','키움','NC','SSG']
+    ###########
 
-#     #팀의 컬렉션 위치 찾기
-#     idx = team_name.index(pId)
-#     # DB에서 해당 선수의 팀 컬렉션 찾기
-#     team_collection = collections[idx]
+    #팀의 컬렉션 위치 찾기
+    idx = team_name.index(pId)
+    # DB에서 해당 선수의 팀 컬렉션 찾기
+    team_collection = collections[idx]
     
-#     # 해당 팀의 전체 선수 이름 추출 
-#     team_player_name =team_collection.find({}, {"name": 1})
+    # 해당 팀의 전체 선수 이름 추출 
+    team_player_name =team_collection.find({}, {"name": 1})
 
-#      # 전체 선수중 타겟 선수 찾기
-#     for player in team_player_name:
-#         target_player_name = player.get("name")
-#         if not target_player_name:
-#             continue
+     # 전체 선수중 타겟 선수 찾기
+    for player in team_player_name:
+        target_player_name = player.get("name")
+        if not target_player_name:
+            continue
     
-#     # DB의 각 팀별 컬렉션에서 해당 선수의 도큐멘트 형태로 변환
-#         team_collection.update_one(
-#             {"name": target_player_name},
-#              {"$set": {
+    # DB의 각 팀별 컬렉션에서 해당 선수의 도큐멘트 형태로 변환
+        team_collection.update_one(
+            {"name": target_player_name},
+             {"$set": {
                  
-#                 'id' : target_user,
-#                 'nickname' : target_nickname,
-#                 'player_comment': input_comment,
-#                 'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                'id' : target_user,
+                'nickname' : target_nickname,
+                'player_comment': input_comment,
+                'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 
-#                 }
-#              }
-#             )
-#     # DB에 아이디, 닉네임과 댓글 내용 데이터 저장
-#     # 댓글 등록 성공 (응답 성공 반환)
-#     return jsonify( {'result': 'success','msg' : '댓글 등록 성공!', 'nickname' : target_nickname, 'url' : '/team/<teamname>/<pId>'})
+                }
+             }
+            )
+    # DB에 아이디, 닉네임과 댓글 내용 데이터 저장
+    # 댓글 등록 성공 (응답 성공 반환)
+    return jsonify( {'result': 'success','msg' : '댓글 등록 성공!', 'nickname' : target_nickname, 'url' : '/team/<teamname>/<pId>'})
 
 
 

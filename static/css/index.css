@@ -2,23 +2,41 @@
     max-width: 960px;
     margin: 0 auto;
     padding: 0;
+    background-color: rgba(255,255,255,0.8);
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+body {
+    background-image: url('/static/img/backgroundpage.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+    background-attachment: fixed;
 }
 
 /* 페이지 로고 & 프로필 사진 */
 .mainTitle {
     display: flex;
-    align-items: center;  /* 세로 중앙 정렬 */
-    justify-content: space-between; /* 양쪽 정렬 (필요에 따라 center도 가능) */
+    align-items: center;
+    /* 세로 중앙 정렬 */
+    justify-content: space-between;
+    /* 양쪽 정렬 (필요에 따라 center도 가능) */
     padding: 20px;
 }
 
-.mainLogo{
+.mainLogo {
     width: 300px;
     height: 200px;
-    background-image:url('../img/logo.png'), url('../img/logoImg.png');
+    background-image: url('../img/logo.png'), url('../img/logoImg.png');
     background-position: center center;
     background-repeat: no-repeat;
     background-size: contain, cover;
+}
+
+.mainLogo:hover {
+    width: 350px;
+    height: 200px;
 }
 
 .mainProfile {
@@ -27,9 +45,9 @@
     align-items: center;
     max-width: 20%;
 }
-
 .mainProfile img {
-    border-radius: 50%;  /* 동그란 프로필처럼 표현하고 싶다면 */
+    border-radius: 50%;
+    /* 동그란 프로필처럼 표현하고 싶다면 */
     width: 110px;
     height: 110px;
     object-fit: cover;
@@ -43,18 +61,33 @@
 
 /* 네비게이션 드롭다운 */
 .nav-item.dropdown {
-    position: relative; /* 드롭다운 위치 기준 */
+    position: relative;
+    /* 드롭다운 위치 기준 */
     width: 100%;
 }
+
 .nav-item.dropdown .dropdown-menu {
     width: 100%;
     left: 0;
     right: 0;
 }
-.nav-item.dropdown .dropdown-menu .dropdown-item {
-    text-align: center;
+
+.nav-link dropdown-toggle,
+.nav-item border-right border-primary,
+.nav-item:hover {
+    background-color: RGB(217, 239, 251);
+
 }
 
+.border.border-secondary.rounded {
+    font-family: "Do Hyeon", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 21px;
+}
+.border.border-secondary.rounded a{
+    color: RGB(52,58,64);
+}
 .table {
     text-align: center;
 }
@@ -69,7 +102,7 @@
 
     color: black;
     text-align: center;
-    }
+}
 
 /* 마이페이지  */
 .myPageBack {
@@ -78,4 +111,9 @@
     margin: 10px 0;
     padding: 20px;
     border-radius: 8px;
+}
+
+.card.h-100:hover{
+    width: 102%;
+    border: 3px solid RGB(61,112,84);
 }
