@@ -23,15 +23,7 @@
             gap: 10px;
         }
 
-        .list-unstyled {
-            width: 60%;
-            height: 400px;
-            align-items: center;
-            padding: 0 20px;
-            margin: 20px 0;
-            gap: 10px;
-            overflow: scroll;
-        }
+        
 
         body {
             padding: 20px;
@@ -138,7 +130,7 @@
         <!-- 페이지 중간 정보 공간 -->
         <div id="middle">
                 <!--팀기사 들어갈 곳-->
-                <!-- <div class="all" style="white-space: nowrap;">
+                <div class="all" style="white-space: nowrap;">
                     <div class="list-group" style="max-width: 540px; max-height: 300px; overflow: scroll; ">
                         {% for article in team['team_news']%}
                         {% if article.title and article.link and article.content and article.date and article.image %}
@@ -152,20 +144,8 @@
                         {% endif %}
                         {% endfor %}
                     </div>
-                </div> -->
-                <ul class="list-unstyled">
-                    {% for article in team['team_news']%}
-                    {% if article.title and article.link and article.content and article.date and article.image %}
-                        <li class="media">
-                            <a href="{{article.link}}">
-                            <img style="background-size:cover;" src="{{article.image}}" class="mr-3">
-                            <div class="media-body">
-                            <h5 class="mt-0 mb-1">{{article.title}}</h5>
-                            <p>{{article.content}}</p>
-                            </div></a>
-                        </li>
-                    {% endif %}
-                    {% endfor %}
+                </div>
+            
                 </ul>
 
                 <!--경기일정 들어갈 곳 -->

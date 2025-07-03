@@ -10,7 +10,7 @@ from selenium.webdriver.common.by import By
 import time
 from flask import Flask, Blueprint, render_template, jsonify,request,session
 from datetime import datetime
-import player
+from . import player
 
 team_page = Blueprint('team', __name__, static_folder="static", template_folder="templates", url_prefix="/team")
 
