@@ -319,9 +319,9 @@ def team_detail(teamName):
     now = time.time()
     target=teams_col.find_one()
     lastUpdatedTime = float(target['lastUpdatedTime'])
-    print(teamName)
+    # print(teamName)
     name = team_name[teamName] #SSG_LANDERS -> SSG 랜더스
-    print(name)
+    # print(name)
 
     if now - lastUpdatedTime >=3600:
         scrapStart(name)
