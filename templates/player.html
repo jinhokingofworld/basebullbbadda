@@ -13,53 +13,81 @@
     <!-- 이 부분은 index.css를 불러오는 코드입니다.-->    
     <link rel="stylesheet" href="/static/css/index.css">
     <style>
-        .all {
+        .middle {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
+            flex-wrap: wrap;
             gap: 10px;
         }
-        body {
-            padding: 20px;
+
+        .news-section, .video-section {
+            box-sizing: border-box;
         }
-        .team-section {
-            display: flex;
-            border: 2px solid black;
-            padding: 20px;
-            margin-bottom: 30px;
+
+        .news-section.full, .video-section.full {
+            width: 100%;
         }
-        .team-section img {
-            width: 200px;
-            height: 200px;
-            margin-right: 30px;
+
+        .news-section.half {
+            width: 60%;
         }
-        .card-section {
-            display: flex;
-            margin-right: 10px;
-            margin-left: 10px;
+
+        .video-section.half {
+            width: 38%;
+            max-height: 300px;
+            overflow-y: scroll;
         }
-        .card-box {
-            border: 2px solid black;
-            width: 50%;
-            height: 200px;
+
+        .news-card {
+            max-height: 300px;
+            overflow-y: scroll;
+            border: 1px solid #ddd;
             padding: 10px;
-            margin: 10px;
         }
-        .schedule-box,
-        .community-box {
-            border: 2px solid black;
-            height: 150px;
-            padding: 10px;
-            margin-bottom: 20px;
+
+        .news-card-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
         }
-        .card-body {
-            margin: 20px;
+
+        .news-card-item img {
+            width: 120px;
+            height: auto;
         }
-        #pImg {
-            width: 240px;
-            height: 320px;
-            margin: 10px;
+
+        .news-title {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: bold;
+            color: #007bff;
+            text-decoration: none;
+            max-width: 100%;
+        }
+
+        .news-content {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 14px;
+            color: #333;
+            max-width: 100%;
+        }
+        .video-section {
+            overflow-y: scroll;
+
+        }
+        .video-section iframe {
+            width: 100%;
+            height: 180px;
+        }
+
+        .comment-section {
+            margin-top: 20px;
+            width: 100%;
         }
     </style>
     <!-- 이 부분은 jQuery와 bootstrap 번들 코드로 자바스크립트 코드를 임포트 합니다. . -->
@@ -97,51 +125,50 @@
             </div>
         </div>
 
-        <!-- 페이지 중간 정보 공간 -->
-       <div id="middle">
-            <!--선수 기사 들어갈 곳-->
-                    <div class="all" style="white-space: nowrap;">
-                        <div class="list-group" style="max-width: 540px; max-height: 300px; overflow: scroll; ">
-                            {% for article in player['news']%}
-                                {% if article.title and article.link and article.content and article.image %}
-                                <a href="{{article.link}}"><img style="background-size:cover;" src="{{article.image}}" class="list-group-item list-group-item-action"></img>
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">"
-                                            <p href="{{article.link}}" target="_blank">{{article.title}}</p></h5>
-                                    </div>
-                                    <p class="mb-1">{{article.content}}</p>
-                                </a>
-                                {% endif %}
-                            {% endfor %}
+        <!-- 중간 정보 영역 시작 -->
+        <div class="middle">
+
+            {% if player['news'] %}
+            <div class="news-section {% if player['player_clips'] %}half{% else %}full{% endif %}">
+                <div class="news-card">
+                    {% for article in player['news'] %}
+                    {% if article.title and article.link and article.content and article.image %}
+                    <div class="news-card-item">
+                        <img src="{{ article.image }}" alt="뉴스 이미지">
+                        <div>
+                            <a href="{{ article.link }}" target="_blank" class="news-title">{{ article.title }}</a>
+                            <p class="news-content">{{ article.content }}</p>
                         </div>
-                        
-            <!-- 선수 영상 들어갈 곳 -->
-            <div class="list-schedule">
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if player['player_clips'] %}
+            <div class="video-section {% if player['news'] %}half{% else %}full{% endif %}">
                 {% for clip in player['player_clips'] %}
                 {% if clip.title %}
-                <div class="list-clips">
+                <div class="list-clips" style="margin-bottom: 10px;">
                     <iframe src="{{ clip.embed_link }}"
-                            width="300"
-                            height="150"
                             title="{{ clip.title }}"
                             style="border: none;"
                             referrerpolicy="strict-origin-when-cross-origin"
                             allowfullscreen>
                     </iframe>
-                    <a href="{{ clip.watch_link }}" class="list-group-item info  clip-title" target="_blank">
-                        <h5>{{ clip.title }}</h5>
-                        <div class="d-flex w-100 justify-content-between">
-                            <small class="mb-1">{{ clip.date }}</small>
-                            <small>{{ clip.views }}</small>
-                        </div>
-                    </a>
+                    <a href="{{ clip.watch_link }}" class="news-title" target="_blank">{{ clip.title }}</a>
+                    <div style="display: flex; justify-content: space-between; font-size: 12px;">
+                        <span>{{ clip.date }}</span>
+                        <span>{{ clip.views }}</span>
+                    </div>
                 </div>
                 {% endif %}
                 {% endfor %}
             </div>
+            {% endif %}
         </div>
         <br>
-
 
 
 
