@@ -283,14 +283,45 @@ def get_team_comments(eng_team_id):
     comments = list(db.team_comment.find({'team_id': name}, {'_id': False}))
     return jsonify({'result': 'success', 'comments': comments})
 
+# DB에서 팀별 댓글 등록 api 응답하는 부분
+@team_page.route('/<eng_na>/comment', methods =['POST'])
+def post_comment(eng_na):
+    print("응답 받음")
+     # 입력받은 Comment 데이터 가져오기
+    input_comment = request.form.get('comment','').strip()
+
+    if(input_comment == ''):
+        return jsonify({'result': 'fail', 'msg': '내용을 입력하세요.'})
+
+    #세션된 ID,닉네임 가져오기
+    target_user = session.get('id')
+    target_nickname = session.get('nickname')
+
+    # 영어를 한글로
+    name = team_name[eng_na]
+    
+    # DB에 도큐멘트 형태로 변환
+    doc = {
+        'team_id': name, 'id' : target_user, 'nickname' :target_nickname, 'comment' : input_comment,  'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S') } #좋아요 추가시 user db와 이름혼동문제 
+    db.team_comment.insert_one(doc)
+    # DB에 아이디, 닉네임과 댓글 내용 데이터 저장
+    # 댓글 등록 성공 (응답 성공 반환)
+    return jsonify( {'result': 'success','msg' : '댓글 등록 성공!', 'nickname' : target_nickname, 'url' : f'/team/{eng_na}'})
+    
+
+
+
+
+
 #팀 페이지 라우팅 
 @team_page.route('/<teamName>')
 def team_detail(teamName):
     now = time.time()
     target=teams_col.find_one()
     lastUpdatedTime = float(target['lastUpdatedTime'])
-    
+    print(teamName)
     name = team_name[teamName] #SSG_LANDERS -> SSG 랜더스
+    print(name)
 
     if now - lastUpdatedTime >=3600:
         scrapStart(name)
@@ -376,7 +407,7 @@ def get_player_comments(teamName,pId):
     return jsonify({'result': 'success', 'comments': comment_list})
 
 
-# 선수 댓글 등록 api 응답하는 부분
+# DB에서 선수별 댓글 등록 api 응답하는 부분
 @team_page.route('/<teamName>/playerId=<pId>/comment', methods =['POST'])
 def post_player_comment(teamName,pId):
     print("응답 왔음")

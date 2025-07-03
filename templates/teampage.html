@@ -154,20 +154,7 @@
                         {% endfor %}
                     </div>
                 </div>
-                <ul class="list-unstyled">
-                    {% for article in team['team_news']%}
-                    {% if article.title and article.link and article.content and article.date and article.image %}
-                        <li class="media">
-                            <a href="{{article.link}}">
-                            <img style="background-size:cover;" src="{{article.image}}" class="mr-3">
-                            <div class="media-body">
-                            <h5 class="mt-0 mb-1">{{article.title}}</h5>
-                            <p>{{article.content}}</p>
-                            </div></a>
-                        </li>
-                    {% endif %}
-                    {% endfor %}
-                </ul>
+             
 
                 <!--경기일정 들어갈 곳 -->
                 <div class="list-schedule">
@@ -241,7 +228,6 @@
                 data: {},
                 success: function (response) {
                     if (response['logged_in'] == true) {
-
 
                         // 댓글 등록 api 요청하는 부분
                         $.ajax({
