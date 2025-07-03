@@ -33,12 +33,12 @@
 
         .video-section.half {
             width: 38%;
-            max-height: 300px;
+            max-height: 400px;
             overflow-y: scroll;
         }
 
         .news-card {
-            max-height: 300px;
+            max-height: 400px;
             overflow-y: scroll;
             border: 1px solid #ddd;
             padding: 10px;
@@ -88,6 +88,35 @@
         .comment-section {
             margin-top: 20px;
             width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .middle {
+                flex-direction: column;
+            }
+
+            .news-section.half,
+            .video-section.half,
+            .news-section.full,
+            .video-section.full {
+                width: 100% !important;
+                max-height: 400px;
+            }
+
+            .news-card,
+            .video-section {
+                max-height: 400px;
+            }
+
+            .news-card-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .news-card-item img {
+                width: 100%;
+                height: auto;
+            }
         }
     </style>
     <!-- 이 부분은 jQuery와 bootstrap 번들 코드로 자바스크립트 코드를 임포트 합니다. . -->
