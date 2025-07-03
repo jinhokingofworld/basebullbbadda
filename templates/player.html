@@ -99,7 +99,37 @@
 
         <!-- 페이지 중간 정보 공간 -->
         <div id="middle">
-                
+                <!--팀기사 들어갈 곳-->
+                <!-- <div class="all" style="white-space: nowrap;">
+                    <div class="list-group" style="max-width: 540px; max-height: 300px; overflow: scroll; ">
+                        {% for article in team['team_news']%}
+                        {% if article.title and article.link and article.content and article.date and article.image %}
+                        <a href="{{article.link}}"><img style="background-size:cover;" src="{{article.image}}" class="list-group-item list-group-item-action"></img>
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">"
+                                    <a href="{{article.link}}" target="_blank">{{article.title}}</a></h5>
+                            </div>
+                            <p class="mb-1">{{article.content}}</p>
+                        </a>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div> -->
+
+                <!-- 경기일정 들어갈 곳
+                <div class="list-schedule";">
+                    {% for schedule in team['team_schedule']%}
+                    {% if schedule.date and schedule.time and schedule.teams %}
+                    <a href="#" class="list-group-item list-group-item-action active">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{schedule.date}}</h5>
+                            <small>{{schedule.time}}</small>
+                        </div>
+                        <p class="mb-1">{{schedule.teams}}</p>
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                </div> -->
         </div>
         <br>
 
@@ -125,7 +155,7 @@
                     type="button">등록</button>
             </div>
                 <div class="list-group"  style="width: 100%; max-height: 300px; overflow-y: scroll; display: inline-block; ">
-                <div class="comment-list text-muted" id="list_comments"></div>
+                <div class="comment-list text-muted" id="list_content"></div>
                    <!-- 댓글 리스트가 들어갈 곳 -->
         </div> 
     </div>
@@ -165,7 +195,6 @@
                             success: function (response) {
                                 if (response['result'] == 'success') {
                                     alert(response['msg'])
-                                    load_comments()
                                     // 선수페이지로 리디렉션 (제자리 리디렉션)
                                     window.location.href = response['url'];
                                 }
@@ -186,8 +215,6 @@
 
          function load_comments() {
 
-             let path = window.location.pathname;
-
             // 정규표현식으로 URL에서 playerId 추출
             let match = path.match(/playerId=(\d+)/);
             let pId = match ? match[1] : null;
@@ -205,12 +232,13 @@
                 url: `/team/${teamName}/playerId=${pId}/comment`,
                 data: {},
                 success: function(response) {
-                        console.log("응답 성공했음")
+                    if(response['result'] == 'success') {
+                        // console.log("응답 성공했음")
                         // DB에서 추출한 값을 응답으로 받음
                         let comments = response['comments'];
                         
                          // 데이터 받기전 기존 댓글 삭제
-                        $("#list_comments").empty();
+                        $("#list_content").empty();
 
                         // 배열안을 순회하는 함수
                         comments.forEach((cmt) => {
@@ -220,10 +248,12 @@
                             <p> ${cmt.comment}</p> <hr>
                             </div>
                          `;
-                            $("#list_comments").append(temp_html);
+                            $("#list_content").append(temp_html);
                         })
                         
-             
+                        
+                    
+                    } 
                 }  
             });
         }
