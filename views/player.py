@@ -111,54 +111,115 @@ def player_list():
     driver.quit()
 
 #팀 뉴스기사 가져오기 
-def get_player_news(player_name):
-    driver.get("https://www.koreabaseball.com/MediaNews/News/BreakingNews/List.aspx")
-    time.sleep(1)
+# def get_player_news(player_name):
+#     driver.get("https://www.koreabaseball.com/MediaNews/News/BreakingNews/List.aspx")
+#     time.sleep(1)
 
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
-    items = soup.select("ul.boardPhoto > li")
+#     soup = BeautifulSoup(driver.page_source, 'html.parser')
+#     items = soup.select("ul.boardPhoto > li")
 
-    news_list = []
-    for item in items:
-        title_tag = item.select_one("strong > a")
-        content_tag = item.select_one(".txt p")
-        date_tag = item.select_one("span.date")
-        image_tag = item.select_one(".boardPhoto .photo > a img")
-
-
-        if title_tag:
-            href = title_tag.get('href', '')
-            if href.startswith("http"):
-                link = href
-            elif href.startswith("View.aspx"):
-                link = "https://www.koreabaseball.com/MediaNews/News/BreakingNews/" + href
-            elif href.startswith("/"):
-                link = "https://www.koreabaseball.com" + href
-            else:
-                link = "https://www.koreabaseball.com/" + href
-
-            title = title_tag.get_text(strip=True)
-            content = content_tag.get_text(strip=True) if content_tag else ""
+#     news_list = []
+#     for item in items:
+#         title_tag = item.select_one("strong > a")
+#         content_tag = item.select_one(".txt p")
+#         date_tag = item.select_one("span.date")
+#         image_tag = item.select_one(".boardPhoto .photo > a img")
 
 
-            if player_name in title or player_name in content:
+#         if title_tag:
+#             href = title_tag.get('href', '')
+#             if href.startswith("http"):
+#                 link = href
+#             elif href.startswith("View.aspx"):
+#                 link = "https://www.koreabaseball.com/MediaNews/News/BreakingNews/" + href
+#             elif href.startswith("/"):
+#                 link = "https://www.koreabaseball.com" + href
+#             else:
+#                 link = "https://www.koreabaseball.com/" + href
 
-                news = {
-                    "title": title,
-                    "link": link,
-                    "content": content,
-                    "date": date_tag.get_text(strip=True) if date_tag else "",
-                    "image":image_tag['src'] if image_tag and image_tag.has_attr('src') else ""
-                }
-                news_list.append(news)
+#             title = title_tag.get_text(strip=True)
+#             content = content_tag.get_text(strip=True) if content_tag else ""
 
-        if len(news_list)==3: 
-            break
-    return news_list
+
+#             if player_name in title or player_name in content:
+
+#                 news = {
+#                     "title": title,
+#                     "link": link,
+#                     "content": content,
+#                     "date": date_tag.get_text(strip=True) if date_tag else "",
+#                     "image":image_tag['src'] if image_tag and image_tag.has_attr('src') else ""
+#                 }
+#                 news_list.append(news)
+
+#         if len(news_list)==3: 
+#             break
+#     return news_list
 
 
 #mongoDB에 뉴스기사 저장 
-def update_all_player_new():
+# def update_all_player_new():
+#     for col, team_name in zip(collections, team_names):
+#         players = list(col.find({}))
+#         print(f"\n[{team_name}] 뉴스 업데이트 시작")
+
+#         for player in players:
+#             name = player.get("name")
+#             if not name:
+#                 continue
+
+#             news = get_player_news(name)
+#             if news:
+#                 col.update_one(
+#                     {"_id": player["_id"]},
+#                     {"$set": {"news": news}}
+#                 )
+#                 print(f" - {name} 뉴스 저장 완료")
+
+# update_all_player_new()
+
+
+# def get_player_news(player_name):
+
+
+def get_player_news(player_name):
+    query = f"kbo {player_name}"
+    url = f"https://search.naver.com/search.naver?ssc=tab.news.all&where=news&sm=tab_jum&query={query}"
+    driver.get(url)
+    time.sleep(1)
+
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    news_list = []
+    seen_links = set()  #중복 링크 저장용
+    items = soup.select(".group_news .sds-comps-vertical-layout.sds-comps-full-layout")
+
+    for item in items:
+        if len(news_list) >= 3:
+            break  #
+
+        title_tag = item.select_one("a span.sds-comps-text-type-headline1")
+        link_tag = title_tag.find_parent("a") if title_tag else None
+        content_tag = item.select_one("a span.sds-comps-text-type-body1")
+        img_tag = item.select_one("div[data-sds-comp='ThumbnailOverlay'] img")
+
+        if not title_tag or not link_tag:
+            continue
+
+        link = link_tag['href']
+        if link in seen_links:
+            continue  # 이미 추가된 기사면 패스
+
+        seen_links.add(link)
+        news = {
+            "title": title_tag.get_text(strip=True),
+            "link": link,
+            "content": content_tag.get_text(strip=True) if content_tag else "",
+            "image": img_tag['src'] if img_tag else ""
+        }
+        news_list.append(news)
+    return news_list
+
+def update_all_player_news():
     for col, team_name in zip(collections, team_names):
         players = list(col.find({}))
         print(f"\n[{team_name}] 뉴스 업데이트 시작")
@@ -168,27 +229,21 @@ def update_all_player_new():
             if not name:
                 continue
 
-            news = get_player_news(name)
+            try:
+                news = get_player_news(name)
+            except Exception as e:
+                print(f" - {name} 뉴스 가져오기 실패: {e}")
+                continue
+
             if news:
                 col.update_one(
                     {"_id": player["_id"]},
-                    {"$set": {"news": news}}
+                    {"$set": {"news": news}}  # 🔁 덮어쓰기 방식
                 )
                 print(f" - {name} 뉴스 저장 완료")
 
-update_all_player_new()
+update_all_player_news()
 
-
-# def remove_all_news_fields():
-#     for col, team_name in zip(collections, team_names):
-#         print(f"[{team_name}] 기존 뉴스 필드 제거 중...")
-#         result = col.update_many(
-#             {"news": {"$exists": True}},  # news 필드가 존재하는 문서만 대상으로
-#             {"$unset": {"news": ""}}     # 해당 필드 제거
-#         )
-#         print(f" - 제거된 문서 수: {result.modified_count}")
-
-# remove_all_news_fields()
 #선수 아이디 mongoDB 삽입  (한화)
 def hanhwa_id_list():
     hanhwa_id=['82211', '73750', '85570', '74745', '95409', '72108' ,'78745','84510','82374', '93112','72139',
