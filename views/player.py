@@ -242,7 +242,8 @@ def update_all_player_news():
                 )
                 print(f" - {name} 뉴스 저장 완료")
 
-update_all_player_news()
+# 모든 선수기사 스크래핑 함수
+# update_all_player_news()
 
 #선수 아이디 mongoDB 삽입  (한화)
 def hanhwa_id_list():
