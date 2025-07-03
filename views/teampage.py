@@ -272,6 +272,8 @@ def dbcall(teamName):
     }
 
 
+
+
 #DB에서 팀별 댓글 추출 API 응답하는 부분
 @team_page.route('/<eng_team_id>/comment', methods=['GET'])
 def get_team_comments(eng_team_id):
