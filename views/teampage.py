@@ -273,12 +273,10 @@ def dbcall(teamName):
 
 
 #DB에서 팀별 댓글 추출 API 응답하는 부분
-@team_page.route('/<eng_team_id>/comment', methods=['GET'])
-def get_team_comments(eng_team_id):
+@team_page.route('/<teamName>/playerId=<pId>/comment', methods=['GET'])
+def get_team_comments(teamName,pId):
 
-    #영어를 한글로
-    name = team_name[eng_team_id]
-    # 댓글 DB중 해당하는 팀의 댓글 추출 후 리스트화
+    # 댓글 DB중 해당하는 선수의 댓글 추출 후 리스트화
     comments = list(db.team_comment.find({'team_id': name}, {'_id': False}))
     return jsonify({'result': 'success', 'comments': comments})
 
@@ -342,7 +340,8 @@ def team_detail(teamName):
 def player_detail(teamName, pId):
 
     #컬렉션 이름 가져오기
-    collection_name = player_db[teamName]
+    collection_name = player_db.get(teamName)
+
     #컬렉션 접근
     collection = db[collection_name]
     # DB에서 데이터 불러오기
@@ -370,7 +369,7 @@ def player_detail(teamName, pId):
 def get_player_comments(teamName, pId):
 
     #컬렉션 이름 가져오기
-    collection_name = player_db[teamName]
+    collection_name = player_db.values(pId)
     #컬렉션 접근
     collection = db[collection_name]
     player = collection.find_one({'playerId': pId}, {'_id': 0, 'player_comment_list': 1})
@@ -379,13 +378,13 @@ def get_player_comments(teamName, pId):
     return jsonify({'result': 'success', 'comments': comment_list})
 
 
-# 댓글 등록 api 응답하는 부분
-@team_page.route('/<teamname>/<pid>/comment', methods =['POST'])
+# 선수 댓글 등록 api 응답하는 부분
+@team_page.route('/<teamName>/playerId=<pId>/comment', methods =['POST'])
 def post_player_comment(teamName,pId):
-        
+    print("응답 왔음")
      # 입력받은 Comment 데이터 가져오기
     input_comment = request.form.get('comment','').strip()
-
+    
     if(input_comment == ''):
         return jsonify({'result': 'fail', 'msg': '내용을 입력하세요.'})
 
@@ -396,12 +395,17 @@ def post_player_comment(teamName,pId):
 
 
     #컬렉션 이름 가져오기
-    collection_name = player_db[pId]
-    #컬렉션 접근
-    collection_name_player = db[collection_name]
+    collection_name = player_db.get(teamName)
+
     
+
+    #컬렉션 접근
+    collection = db[collection_name]
+    
+    print(collection)
+
     # 해당 팀의 전체 선수 이름 추출 
-    team_player_name =collection_name.find({}, {"name": 1})
+    team_player_name =collection.find({}, {"name": 1})
 
      # 전체 선수중 타겟 선수 찾기
     for player in team_player_name:
@@ -410,18 +414,17 @@ def post_player_comment(teamName,pId):
             continue
     
     # DB의 각 팀별 컬렉션에서 해당 선수의 도큐멘트 형태로 변환
-        collection_name_player.update_one(
-            {"name": target_player_name},
-             {"$set": {
-                 
-                'id' : target_user,
-                'nickname' : target_nickname,
-                'player_comment': input_comment,
-                'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                
-                }
-             }
-            )
+    collection.update_one(
+           {"playerId": str(pId)},  # 정확한 타겟팅
+        {"$push": {
+            "player_comment_list": {
+                "id": target_user,
+                "nickname": target_nickname,
+                "comment": input_comment,
+                "date": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }
+        }}
+    )
     # DB에 아이디, 닉네임과 댓글 내용 데이터 저장
     # 댓글 등록 성공 (응답 성공 반환)
     return jsonify( {'result': 'success','msg' : '댓글 등록 성공!', 'nickname' : target_nickname, 'url' : f'/team/{teamName}/playerId={pId}'})
