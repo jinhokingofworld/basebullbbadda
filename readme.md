@@ -371,7 +371,7 @@ app.secret_key = os.getenv("SECRET_KEY")
 ## 👥 팀원
 | 이름 | 역할 |
 |------|------|
-| 권소윤 | Frontend / Backend / 데이터 연동 / 크롤링 |
+| 권소윤 (팀장) | Frontend / Backend / 데이터 연동 / 크롤링 |
 | 김진호 | Frontend / Backend / 서버 최적화 |
 | 손명완 | Frontend / Backend |
 
