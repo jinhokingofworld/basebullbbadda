@@ -1,6 +1,3 @@
-</html>
-
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -157,16 +154,20 @@
         <!-- 중간 정보 영역 시작 -->
         <div class="middle">
 
-            {% if player['news'] %}
-            <div class="news-section {% if player['player_clips'] %}half{% else %}full{% endif %}">
+            {% if news_items %}
+            <div class="news-section {% if clip_items %}half{% else %}full{% endif %}">
                 <div class="news-card">
-                    {% for article in player['news'] %}
-                    {% if article.title and article.link and article.content and article.image %}
+                    {% for article in news_items %}
+                    {% if article.get('title') and article.get('link') %}
                     <div class="news-card-item">
-                        <img src="{{ article.image }}" alt="뉴스 이미지">
+                        {% if article.get('image') %}
+                        <img src="{{ article['image'] }}" alt="뉴스 이미지">
+                        {% endif %}
                         <div>
-                            <a href="{{ article.link }}" target="_blank" class="news-title">{{ article.title }}</a>
-                            <p class="news-content">{{ article.content }}</p>
+                            <a href="{{ article['link'] }}" target="_blank" class="news-title">{{ article['title'] }}</a>
+                            {% if article.get('content') %}
+                            <p class="news-content">{{ article['content'] }}</p>
+                            {% endif %}
                         </div>
                     </div>
                     {% endif %}
@@ -175,21 +176,21 @@
             </div>
             {% endif %}
 
-            {% if player['player_clips'] %}
-            <div class="video-section {% if player['news'] %}half{% else %}full{% endif %}">
-                {% for clip in player['player_clips'] %}
-                {% if clip.title %}
+            {% if clip_items %}
+            <div class="video-section {% if news_items %}half{% else %}full{% endif %}">
+                {% for clip in clip_items %}
+                {% if clip['title'] %}
                 <div class="list-clips" style="margin-bottom: 10px;">
-                    <iframe src="{{ clip.embed_link }}"
-                            title="{{ clip.title }}"
+                    <iframe src="{{ clip['embed_link'] }}"
+                            title="{{ clip['title'] }}"
                             style="border: none;"
                             referrerpolicy="strict-origin-when-cross-origin"
                             allowfullscreen>
                     </iframe>
-                    <a href="{{ clip.watch_link }}" class="news-title" target="_blank">{{ clip.title }}</a>
+                    <a href="{{ clip['watch_link'] }}" class="news-title" target="_blank">{{ clip['title'] }}</a>
                     <div style="display: flex; justify-content: space-between; font-size: 12px;">
-                        <span>{{ clip.date }}</span>
-                        <span>{{ clip.views }}</span>
+                        <span>{{ clip['date'] }}</span>
+                        <span>{{ clip['views'] }}</span>
                     </div>
                 </div>
                 {% endif %}

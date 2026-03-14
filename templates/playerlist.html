@@ -62,7 +62,7 @@
 
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                <button class="nav-link" id="KIA_TIGERS-tab" data-toggle="tab" data-target="#KIA_TIGERS_Players" type="button" role="tab" aria-controls="nav-profile" aria-selected="true">KIA 타이거즈</button>
+                <button class="nav-link active" id="KIA_TIGERS-tab" data-toggle="tab" data-target="#KIA_TIGERS_Players" type="button" role="tab" aria-controls="nav-profile" aria-selected="true">KIA 타이거즈</button>
                 <button class="nav-link" id="SAMSUNG_LIONS-tab" data-toggle="tab" data-target="#SAMSUNG_LIONS_Players" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">삼성 라이온즈</button>
                 <button class="nav-link" id="LG_TWINS-tab" data-toggle="tab" data-target="#LG_TWINS_Players" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">LG 트윈스</button>
                 <button class="nav-link" id="DOOSAN_BEARS-tab" data-toggle="tab" data-target="#DOOSAN_BEARS_Players" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">두산 베어스</button>
@@ -77,7 +77,7 @@
         <br>
         
         <div class="tab-content" id="nav-tabContent">
-            <div class="tab-pane fade" id="KIA_TIGERS_Players" role="tabpanel" aria-labelledby="nav-profile-tab"><div id="KIA_TIGERS" class="row row-cols-1 row-cols-md-4"></div></div>
+            <div class="tab-pane fade show active" id="KIA_TIGERS_Players" role="tabpanel" aria-labelledby="nav-profile-tab"><div id="KIA_TIGERS" class="row row-cols-1 row-cols-md-4"></div></div>
             <div class="tab-pane fade" id="SAMSUNG_LIONS_Players" role="tabpanel" aria-labelledby="nav-profile-tab"><div id="SAMSUNG_LIONS" class="row row-cols-1 row-cols-md-4"></div></div>
             <div class="tab-pane fade" id="LG_TWINS_Players" role="tabpanel" aria-labelledby="nav-profile-tab"><div id="LG_TWINS" class="row row-cols-1 row-cols-md-4"></div></div>
             <div class="tab-pane fade" id="DOOSAN_BEARS_Players" role="tabpanel" aria-labelledby="nav-profile-tab"><div id="DOOSAN_BEARS" class="row row-cols-1 row-cols-md-4"></div></div>
@@ -92,6 +92,10 @@
     </div> <!-- 컨테이너 끝-->
 
     <script>
+        $(function () {
+            loadPlayers('KIA_TIGERS');
+        });
+
         //이벤트 리스너 중 하나인'shown.bs.tab'에 반응해서 함수를 실행
         $('button[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             const activeTab = $('.nav-link.active').attr('id'); // "KIA_TIGERS-tab"

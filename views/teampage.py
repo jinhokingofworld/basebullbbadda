@@ -345,26 +345,64 @@ def player_detail(teamName, pId):
 
     #컬렉션 이름 가져오기
     collection_name = player_db.get(teamName)
+    if not collection_name:
+        return "존재하지 않는 팀입니다.", 404
 
     #컬렉션 접근
     collection = db[collection_name]
     # DB에서 데이터 불러오기
-    target = collection.find_one({'playerId' : pId}, {'_id' : 0})
+    target = collection.find_one({'playerId' : str(pId)}, {'_id' : 0})
+    if not target:
+        return "존재하지 않는 선수입니다.", 404
 
     # 시간 확인
     now = time.time()
-    lastUpdatedTime = float(target['lastUpdatedTime'])
+    lastUpdatedTime = float(target.get('lastUpdatedTime', 0))
+    pData = target
+    has_news = bool(target.get('news'))
+    has_clips = bool(target.get('player_clips'))
+    needs_refresh = (now - lastUpdatedTime >= 3600 * 24 * 3) or not has_news or not has_clips
 
-    #사흘마다 선수 데이터 동적으로 가져와서 저장
-    if now - lastUpdatedTime >= 3600 * 24 * 3:
-        #스크랩하는 함수
-        player.scrapAllPlayer(target['name'])
-    else:
-        #해당 선수 정보 DB에서 가져오기
-        pData = collection.find_one({'playerId' : str(pId)}, {'_id' : 0})
-        
-        print(jsonify(pData))
-    return render_template("player.html",player=pData, nickname = session.get('nickname','익명'))
+    # 사흘이 지났거나 기사/영상 데이터가 비어 있으면 다시 채운다.
+    if needs_refresh:
+        try:
+            updated_fields = {
+                'lastUpdatedTime': now,
+                'team_name': team_name.get(teamName, target.get('team_name', teamName))
+            }
+
+            if not has_news or now - lastUpdatedTime >= 3600 * 24 * 3:
+                refreshed_news = player.get_player_news(target['name'])
+                updated_fields['news'] = refreshed_news or target.get('news', [])
+
+            if not has_clips or now - lastUpdatedTime >= 3600 * 24 * 3:
+                refreshed_clips = player.get_player_clips(target['name'])
+                updated_fields['player_clips'] = refreshed_clips or target.get('player_clips', [])
+
+            collection.update_one({'playerId': str(pId)}, {'$set': updated_fields})
+            pData = collection.find_one({'playerId': str(pId)}, {'_id': 0}) or target
+        except Exception as error:
+            print(f"player detail refresh failed for {target['name']}: {error}")
+            pData = target
+
+    if 'team_name' not in pData:
+        pData['team_name'] = team_name.get(teamName, teamName)
+    news_items = pData.get('news') or []
+    clip_items = pData.get('player_clips') or []
+    print(
+        f"player_detail team={teamName} playerId={pId} "
+        f"name={pData.get('name')} news={len(news_items)} clips={len(clip_items)}"
+    )
+    pData['news'] = news_items
+    pData['player_clips'] = clip_items
+
+    return render_template(
+        "player.html",
+        player=pData,
+        news_items=news_items,
+        clip_items=clip_items,
+        nickname=session.get('nickname', '익명')
+    )
 
 
 
@@ -372,33 +410,20 @@ def player_detail(teamName, pId):
 #DB에서 선수별 댓글 추출 API 응답하는 부분
 @team_page.route('/<teamName>/playerId=<pId>/comment', methods=['GET'])
 def get_player_comments(teamName,pId):
-    print("응답 요청함")
     #컬렉션 이름 가져오기
     collection_name = player_db.get(teamName)
+    if not collection_name:
+        return jsonify({'result': 'fail', 'msg': '존재하지 않는 팀입니다.'}), 404
 
-    print(collection_name)
     #컬렉션 접근
     collection = db[collection_name]
-    
-    print(collection)
-    
-    # print(collection)
 
-    # # 해당 팀의 전체 선수 이름 추출 
-    # team_player_name =collection.find({}, {"name": 1})
-
-
-    #  # 전체 선수중 타겟 선수 찾기
-    # for player in team_player_name:
-    #     target_player_name = player.get("name")
-    #     if not target_player_name:
-    #         continue
     player_info =collection.find_one({'playerId': str(pId)}, {'player_comment_list': 1,})
     
     if not player_info:
-        return jsonify({'result': 'fail', 'msg': '해당 선수를 찾을 수 없습니다.'})
+        return jsonify({'result': 'fail', 'msg': '해당 선수를 찾을 수 없습니다.'}), 404
     
-    comment_list = player_info['player_comment_list']
+    comment_list = player_info.get('player_comment_list', [])
 
     return jsonify({'result': 'success', 'comments': comment_list})
 

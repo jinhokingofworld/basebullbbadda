@@ -28,13 +28,12 @@ teams_col8=db.kiwoom_player
 teams_col9=db.nc_player
 teams_col10=db.ssg_player
 
-#셀레니움 기본 설정 
-options=Options()
-options.add_argument('--headless')
-options.add_argument('--no-sandbox')
-options.add_argument('--disable-dev-shu-usage')
-
-driver=webdriver.Chrome(options=options)
+def create_driver():
+    options = Options()
+    options.add_argument('--headless')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--disable-dev-shu-usage')
+    return webdriver.Chrome(options=options)
 
 
 headers={'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
@@ -61,87 +60,94 @@ team_id=['HT','LT','LG','OB','SS','KT','HH','WO','NC','SK']
 team_name=['KIA','롯데','LG','두산','삼성','KT','한화','키움','NC','SSG']
 #kbo에서 선수 리스트 가져오기 
 def player_list():
+    driver = create_driver()
     url = "https://www.koreabaseball.com/Player/Register.aspx"
-    driver.get(url)
-    time.sleep(1)
+    try:
+        driver.get(url)
+        time.sleep(1)
 
 
-    # team_id=['HT','LT','LG','OB','SS','KT','HH','WO','NC','SK']
-    # team_name=['KIA','롯데','LG','두산','삼성','KT','한화','키움','NC','SSG']
+        # team_id=['HT','LT','LG','OB','SS','KT','HH','WO','NC','SK']
+        # team_name=['KIA','롯데','LG','두산','삼성','KT','한화','키움','NC','SSG']
 
-# 팀별 반복
-    for idx, (tid,tname) in enumerate(zip(team_id, team_name)):
-        try:
-            # 팀 버튼 클릭
-            team_btn = driver.find_element(By.XPATH, f'//li[@data-id="{tid}"]/a')
-            team_btn.click()
-            time.sleep(1)
+    # 팀별 반복
+        for idx, (tid,tname) in enumerate(zip(team_id, team_name)):
+            try:
+                # 팀 버튼 클릭
+                team_btn = driver.find_element(By.XPATH, f'//li[@data-id="{tid}"]/a')
+                team_btn.click()
+                time.sleep(1)
 
-            # HTML 파싱
-            soup = BeautifulSoup(driver.page_source, 'html.parser')
-            rows = soup.select('[class^="tNData"] tbody tr')
+                # HTML 파싱
+                soup = BeautifulSoup(driver.page_source, 'html.parser')
+                rows = soup.select('[class^="tNData"] tbody tr')
 
-            players=[]
+                players=[]
 
-            # 선수 정보 뽑아옴 
-            now = time.time()
-            for row in rows:
-                cols = row.select('td')
-                if len(cols) >= 3:
-                    player_dict={
-                        "name": cols[1].text.strip(),     # 이름
-                        "number": cols[0].text.strip(),   # 번호
-                        "toota": cols[2].text.strip(),    # 투타
-                        "birth": cols[3].text.strip(),    # 생년월일
-                        "spec": cols[4].text.strip(),
-                        "lastUpdatedTime": now
-                    }
-                    players.append(player_dict)
+                # 선수 정보 뽑아옴 
+                now = time.time()
+                for row in rows:
+                    cols = row.select('td')
+                    if len(cols) >= 3:
+                        player_dict={
+                            "name": cols[1].text.strip(),     # 이름
+                            "number": cols[0].text.strip(),   # 번호
+                            "toota": cols[2].text.strip(),    # 투타
+                            "birth": cols[3].text.strip(),    # 생년월일
+                            "spec": cols[4].text.strip(),
+                            "lastUpdatedTime": now
+                        }
+                        players.append(player_dict)
 
-            # collections[idx].delete_many({})
-            # collections[idx].insert_many(players)
+                # collections[idx].delete_many({})
+                # collections[idx].insert_many(players)
 
-        except Exception as e:
-            print(f"{tname} 처리 중 오류 발생: {e}")
-    driver.quit()
+            except Exception as e:
+                print(f"{tname} 처리 중 오류 발생: {e}")
+    finally:
+        driver.quit()
 
 
 def get_player_news(player_name):
+    driver = create_driver()
     query = f"kbo {player_name}"
     url = f"https://search.naver.com/search.naver?ssc=tab.news.all&where=news&sm=tab_jum&query={query}"
-    driver.get(url)
-    time.sleep(1)
+    try:
+        driver.get(url)
+        time.sleep(1)
 
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
-    news_list = []
-    seen_links = set()  #중복 링크 저장용
-    items = soup.select(".group_news .sds-comps-vertical-layout.sds-comps-full-layout")
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        news_list = []
+        seen_links = set()  #중복 링크 저장용
+        items = soup.select(".group_news .sds-comps-vertical-layout.sds-comps-full-layout")
 
-    for item in items:
-        if len(news_list) >= 3:
-            break  #
+        for item in items:
+            if len(news_list) >= 3:
+                break  #
 
-        title_tag = item.select_one("a span.sds-comps-text-type-headline1")
-        link_tag = title_tag.find_parent("a") if title_tag else None
-        content_tag = item.select_one("a span.sds-comps-text-type-body1")
-        img_tag = item.select_one("div[data-sds-comp='ThumbnailOverlay'] img")
+            title_tag = item.select_one("a span.sds-comps-text-type-headline1")
+            link_tag = title_tag.find_parent("a") if title_tag else None
+            content_tag = item.select_one("a span.sds-comps-text-type-body1")
+            img_tag = item.select_one("div[data-sds-comp='ThumbnailOverlay'] img")
 
-        if not title_tag or not link_tag:
-            continue
+            if not title_tag or not link_tag:
+                continue
 
-        link = link_tag['href']
-        if link in seen_links:
-            continue  # 이미 추가된 기사면 패스
+            link = link_tag['href']
+            if link in seen_links:
+                continue  # 이미 추가된 기사면 패스
 
-        seen_links.add(link)
-        news = {
-            "title": title_tag.get_text(strip=True),
-            "link": link,
-            "content": content_tag.get_text(strip=True) if content_tag else "",
-            "image": img_tag['src'] if img_tag else ""
-        }
-        news_list.append(news)
-    return news_list
+            seen_links.add(link)
+            news = {
+                "title": title_tag.get_text(strip=True),
+                "link": link,
+                "content": content_tag.get_text(strip=True) if content_tag else "",
+                "image": img_tag['src'] if img_tag else ""
+            }
+            news_list.append(news)
+        return news_list
+    finally:
+        driver.quit()
 
 def update_all_player_news():
     for col, team_name in zip(collections, team_names):
@@ -568,51 +574,55 @@ def ssg_image_list():
 
     # 선수별 영상 추출 작업 시작
 def get_player_clips(player_name):
+        driver = create_driver()
         query = f"kbo {player_name}"
         # url = f"https://search.naver.com/search.naver?query={query}&where=video"
         url = f"https://search.naver.com/search.naver?where=video&sort=date&view=big&query={query}&playtime=&period=&dtype=&ptype=&selected_cp=&sm=mtb_opt&ie=utf8&nso=so:dd,p:all&x_video="
-        driver.get(url)
-        time.sleep(2)  # 페이지 로딩 대기
+        try:
+            driver.get(url)
+            time.sleep(2)  # 페이지 로딩 대기
 
-        soup = BeautifulSoup(driver.page_source, 'html.parser')
-        items = soup.select(".list_wrap")
+            soup = BeautifulSoup(driver.page_source, 'html.parser')
+            items = soup.select(".list_wrap")
 
-        # print(items)
+            # print(items)
 
-        video_list = []
-        for item in items[:5]:
-            title_tag = item.select_one('.info_area .info_title')
-            
-            link_tag = item.select_one('.thumb_area a')
-            
-            thumb_tag = item.select_one('.thumb_area img')
-            
-            meta_spans = item.select('.desc_group span.desc')
-            # print(meta_spans)
-            # print(title_tag,link_tag,thumb_tag,meta_spans)
+            video_list = []
+            for item in items[:5]:
+                title_tag = item.select_one('.info_area .info_title')
+                
+                link_tag = item.select_one('.thumb_area a')
+                
+                thumb_tag = item.select_one('.thumb_area img')
+                
+                meta_spans = item.select('.desc_group span.desc')
+                # print(meta_spans)
+                # print(title_tag,link_tag,thumb_tag,meta_spans)
 
-            if not (title_tag and link_tag and thumb_tag and len(meta_spans) >= 2):
-                continue
+                if not (title_tag and link_tag and thumb_tag and len(meta_spans) >= 2):
+                    continue
 
-            link = link_tag['href']
-            if "youtube.com" in link and "v=" in link:
-                video_id = link.split("v=")[-1].split("&")[0]
-                embed_link = f"https://www.youtube.com/embed/{video_id}"
-                watch_link = link
-            else:
-                continue
+                link = link_tag['href']
+                if "youtube.com" in link and "v=" in link:
+                    video_id = link.split("v=")[-1].split("&")[0]
+                    embed_link = f"https://www.youtube.com/embed/{video_id}"
+                    watch_link = link
+                else:
+                    continue
 
-            video = {
-                "title": title_tag.get_text(strip=True),
-                "embed_link": embed_link,
-                "watch_link": watch_link,
-                "thumbnail": thumb_tag['src'],
-                "date": meta_spans[0].get_text(strip=True),
-                "views": meta_spans[1].get_text(strip=True)
-            }
-            # video_list.append(video)
+                video = {
+                    "title": title_tag.get_text(strip=True),
+                    "embed_link": embed_link,
+                    "watch_link": watch_link,
+                    "thumbnail": thumb_tag['src'],
+                    "date": meta_spans[0].get_text(strip=True),
+                    "views": meta_spans[1].get_text(strip=True)
+                }
+                video_list.append(video)
 
-        return video_list
+            return video_list
+        finally:
+            driver.quit()
 
 # videos = get_player_clips("김도영")
 # print(videos)
@@ -781,10 +791,3 @@ def post_comment(pId):
 #         except Exception as e:
 #             print(f"{tname} 처리 중 오류 발생: {e}")
 #     driver.quit()
-
-
-
-
-
-# 브라우저 종료
-driver.quit()
