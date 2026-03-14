@@ -3,7 +3,6 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"        # TensorFlow 로그 제거
 os.environ["DISABLE_TFLITE_DELEGATE"] = "1" 
 import requests, time
 from bs4 import BeautifulSoup
-from pymongo import MongoClient
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -11,12 +10,9 @@ import time
 from flask import Flask, Blueprint, render_template, jsonify,request,session
 from datetime import datetime
 from . import player
+from db_config import db
 
 team_page = Blueprint('team', __name__, static_folder="static", template_folder="templates", url_prefix="/team")
-
-uri="mongodb+srv://gksqkf0824:iIb12ywrv7wlB0BP@kwonsoyun.xkcilez.mongodb.net/?retryWrites=true&w=majority&appName=KWONSOYUN&tlsAllowInvalidCertificates=true"
-client=MongoClient("mongodb+srv://gksqkf0824:iIb12ywrv7wlB0BP@kwonsoyun.xkcilez.mongodb.net/?retryWrites=true&w=majority&appName=KWONSOYUN&tlsAllowInvalidCertificates=true")
-db=client.Splint2_Database
 teams_col=db.teams
 
 options=Options()

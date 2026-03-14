@@ -1,16 +1,11 @@
 import requests, time, copy
 from bs4 import BeautifulSoup
-from pymongo import MongoClient
 from flask import Flask, render_template, jsonify, session
+from db_config import db
 
 app = Flask(__name__)
 from views import create_app
 create_app(app)
-
-#데이터베이스 연결
-uri = "mongodb+srv://gksqkf0824:iIb12ywrv7wlB0BP@kwonsoyun.xkcilez.mongodb.net/?retryWrites=true&w=majority&appName=KWONSOYUN&tlsAllowInvalidCertificates=true"
-client = MongoClient(uri, 27017)  # MongoDB는 27017 포트로 돌아갑니다.
-db = client.Splint2_Database
 
 def scrapRanking():
     # 타겟 URL을 읽어서 HTML를 받아오고,

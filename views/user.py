@@ -1,14 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
-from pymongo import MongoClient
 from flask import Blueprint, jsonify, request, render_template,session
+from db_config import db
 
 
 user_page = Blueprint('user', __name__, static_folder="static", template_folder="templates", url_prefix="/user")
-
-uri = "mongodb+srv://gksqkf0824:iIb12ywrv7wlB0BP@kwonsoyun.xkcilez.mongodb.net/?retryWrites=true&w=majority&appName=KWONSOYUN&tlsAllowInvalidCertificates=true"
-client = MongoClient(uri, 27017) #MongoDB는 27017 포트로 돌아갑니다.
-db = client.Splint2_Database
 
 
 # 회원가입 api 응답하는 부분
@@ -133,7 +129,7 @@ def chg_pic():
     teamImg = targetTeam['team_image']
     #유저DB에 저장
     db.user.update_one({'id' : id} , {'$set':{'idol': teamImg}})
-    return jsonify({'result': 'success', 'msg': f'{targetTeam['team_name']}이 좋아하는 팀으로 등록 되었습니다.'})
+    return jsonify({'result': 'success', 'msg': f"{targetTeam['team_name']}이 좋아하는 팀으로 등록 되었습니다."})
 
 #좋아하는 기사 저장 api 응답
 @user_page.route('/api/likes', methods=['POST'])
@@ -183,4 +179,3 @@ def routing_myPage(id):
 @user_page.route('/login')
 def routing_login():
     return render_template('login.html')    
-

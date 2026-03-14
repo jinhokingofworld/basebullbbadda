@@ -253,7 +253,20 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 4. 서버 실행
+### 4. 환경변수 파일 준비
+```bash
+cp .env.example .env
+```
+
+`.env`에 아래 값을 채워 넣습니다.
+```bash
+MONGO_URI=your_mongodb_uri
+SECRET_KEY=your_flask_secret_key
+```
+
+`SECRET_KEY`는 선택값이며 비워두면 실행 시 랜덤 키를 사용합니다.
+
+### 5. 서버 실행
 ```bash
 python app.py
 ```
@@ -349,8 +362,8 @@ POST /user/api/delete
 ---
 
 ## ⚠️ 실행 전 참고
-현재 프로젝트 코드에는 DB 접속 정보가 직접 작성되어 있으므로,  
-공개 저장소로 운영할 경우 반드시 환경변수 방식으로 수정하는 것을 권장합니다.
+현재 프로젝트는 DB 접속 정보를 `.env`에서 읽도록 구성되어 있습니다.  
+공개 저장소에는 실제 `.env`를 올리지 말고 `.env.example`만 공유하세요.
 
 예시:
 ```bash
@@ -365,6 +378,8 @@ import os
 uri = os.getenv("MONGO_URI")
 app.secret_key = os.getenv("SECRET_KEY")
 ```
+
+기존 MongoDB 자격증명이 코드나 Git 이력에 노출된 적이 있다면 공개 전 반드시 Atlas에서 비밀번호 또는 사용자를 회전하세요.
 
 ---
 
