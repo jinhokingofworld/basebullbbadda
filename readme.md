@@ -358,29 +358,7 @@ POST /user/api/delete
 - 검색 기능 고도화
 - 커뮤니티 기능 확장(답글, 게시글, 좋아요 등)
 - 배포 환경 구성 및 운영 자동화
-
----
-
-## ⚠️ 실행 전 참고
-현재 프로젝트는 DB 접속 정보를 `.env`에서 읽도록 구성되어 있습니다.  
-공개 저장소에는 실제 `.env`를 올리지 말고 `.env.example`만 공유하세요.
-
-예시:
-```bash
-MONGO_URI=your_mongodb_uri
-SECRET_KEY=your_secret_key
-```
-
-코드 예시:
-```python
-import os
-
-uri = os.getenv("MONGO_URI")
-app.secret_key = os.getenv("SECRET_KEY")
-```
-
-기존 MongoDB 자격증명이 코드나 Git 이력에 노출된 적이 있다면 공개 전 반드시 Atlas에서 비밀번호 또는 사용자를 회전하세요.
-
+s
 ---
 
 ## 👥 팀원
